@@ -66,7 +66,11 @@ export function PlayerBar({
               <p className={`text-xs truncate ${darkMode ? 'text-white/50' : 'text-gray-500'}`}>{trackLine}</p>
             ) : (
               <p className={`text-xs ${darkMode ? 'text-white/30' : 'text-gray-400'}`}>
-                {currentSlider ? (sliderLabels[station.sliders?.indexOf(currentSlider) ?? -1] ?? 'שידור מושהה') : hasSliders ? `${station.name} #1` : 'שידור חי'}
+                {currentSlider
+                  ? (sliderLabels[station.sliders?.indexOf(currentSlider) ?? -1] ?? 'שידור מושהה')
+                  : hasSliders
+                    ? `${station.name} #1`
+                    : 'שידור חי'}
               </p>
             )}
           </div>
@@ -93,9 +97,34 @@ export function PlayerBar({
             {isLoading ? (
               <span className="block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             ) : isPlaying ? (
-              <span className="text-base">⏸</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="7" y1="19" x2="7" y2="5" strokeWidth="5" />
+                <line x1="17" y1="19" x2="17" y2="5" strokeWidth="5" />
+              </svg>
             ) : (
-              <span className="text-base mr-0.5">▶</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="white"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polygon points="5 3 19 12 5 21 5 3" />
+              </svg>
             )}
           </button>
 
@@ -112,21 +141,51 @@ export function PlayerBar({
         <div className="hidden sm:flex items-center gap-2 shrink-0 w-32">
           <span className={`select-none ${darkMode ? 'text-white/40' : 'text-gray-400'}`}>
             {volume === 0 ? (
-              <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-                <line x1="23" y1="9" x2="17" y2="15"/>
-                <line x1="17" y1="9" x2="23" y2="15"/>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="17"
+                height="17"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                <line x1="23" y1="9" x2="17" y2="15" />
+                <line x1="17" y1="9" x2="23" y2="15" />
               </svg>
             ) : volume < 0.5 ? (
-              <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="17"
+                height="17"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
               </svg>
             ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
-                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="17"
+                height="17"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
               </svg>
             )}
           </span>
