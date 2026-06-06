@@ -61,12 +61,12 @@ export function StationGrid({
   return (
     <div className="flex-1 p-4 max-w-7xl mx-auto w-full">
       {/* Tabs */}
-      <div className={`flex gap-1 mb-5 border-b pb-0 ${darkMode ? 'border-white/8' : 'border-gray-200'}`}>
+      <div className={`flex gap-1 mb-5 border-b pb-0 overflow-x-auto scrollbar-none ${darkMode ? 'border-white/8' : 'border-gray-200'}`}>
         {tabs.map((t) => (
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
-            className={`px-4 py-2.5 text-sm font-medium transition-colors relative
+            className={`shrink-0 whitespace-nowrap px-4 py-2.5 text-sm font-medium transition-colors relative
               ${tab === t.id
                 ? 'text-[#e8192c]'
                 : darkMode ? 'text-white/50 hover:text-white/80' : 'text-gray-400 hover:text-gray-700'
