@@ -31,7 +31,14 @@ export function StationGrid({
   onToggleHide,
 }: StationGridProps) {
   const [tab, setTab] = useState<Tab>('all')
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>(() =>
+    (localStorage.getItem('viewMode') as 'grid' | 'list') ?? 'grid'
+  )
+
+  const setViewModePersisted = (mode: 'grid' | 'list') => {
+    localStorage.setItem('viewMode', mode)
+    setViewMode(mode)
+  }
 
   const normalizedSearch = search.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
 
@@ -85,7 +92,7 @@ export function StationGrid({
         {/* View toggle — mobile only */}
         <button
           className={`sm:hidden shrink-0 p-2 mb-1 rounded-lg transition-colors ${darkMode ? 'text-white/50 hover:text-white/80 hover:bg-white/5' : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100'}`}
-          onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+          onClick={() => setViewModePersisted(viewMode === 'grid' ? 'list' : 'grid')}
           title={viewMode === 'grid' ? 'תצוגת רשימה' : 'תצוגת רשת'}
         >
           {viewMode === 'grid' ? (
