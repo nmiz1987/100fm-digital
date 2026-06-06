@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Header } from './components/Header';
 import { StationGrid } from './components/StationGrid';
 import { PlayerBar } from './components/PlayerBar';
@@ -62,6 +62,40 @@ export default function App() {
   const handleDarkModeToggle = () => {
     setDarkMode((prev) => !prev);
   };
+
+  // Keep a ref so Media Session handlers always see fresh state without re-registering
+  const navigateRef = useRef<{ next: () => void; prev: () => void }>({ next: () => {}, prev: () => {} });
+
+  useEffect(() => {
+    const visible = stations.filter(s => !hidden.includes(s.slug));
+    const idx = visible.findIndex(s => s.slug === player.currentStation?.slug);
+    navigateRef.current = {
+      next: () => { if (visible.length) player.play(visible[(idx + 1) % visible.length]); },
+      prev: () => { if (visible.length) player.play(visible[(idx - 1 + visible.length) % visible.length]); },
+    };
+  }, [stations, hidden, player.currentStation?.slug, player]);
+
+  // Register Media Session action handlers once
+  useEffect(() => {
+    if (!('mediaSession' in navigator)) return;
+    navigator.mediaSession.setActionHandler('nexttrack', () => navigateRef.current.next());
+    navigator.mediaSession.setActionHandler('previoustrack', () => navigateRef.current.prev());
+    return () => {
+      navigator.mediaSession.setActionHandler('nexttrack', null);
+      navigator.mediaSession.setActionHandler('previoustrack', null);
+    };
+  }, []);
+
+  // Update Media Session metadata when station or track changes
+  useEffect(() => {
+    if (!('mediaSession' in navigator) || !player.currentStation) return;
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: nowPlaying?.name ?? player.currentStation.name,
+      artist: nowPlaying?.artist ?? player.currentStation.name,
+      album: '100FM Digital',
+      artwork: [{ src: player.currentStation.logo, sizes: '512x512', type: 'image/png' }],
+    });
+  }, [player.currentStation, nowPlaying]);
 
   if (darkMode) {
     document.documentElement.classList.add('dark');
