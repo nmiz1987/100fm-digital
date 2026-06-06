@@ -47,7 +47,7 @@ export function PlayerBar({
       className={`fixed bottom-0 left-0 right-0 z-50 backdrop-blur border-t flex flex-col ${hasSliders ? 'pb-1' : ''} ${darkMode ? 'bg-[#111111]/98 border-white/8' : 'bg-white/98 border-gray-200 shadow-[0_-1px_8px_rgba(0,0,0,0.08)]'}`}
     >
       {/* Main row */}
-      <div className="flex items-center gap-3 px-4 py-2 h-[70px] md:h-[72px]">
+      <div className="flex items-center gap-3 px-4 py-2 h-17.5 md:h-18">
         {/* Station info */}
         <div className="flex items-center gap-3 min-w-0 flex-1">
           <img
@@ -143,7 +143,7 @@ export function PlayerBar({
               onClick={() => onSelectSlider(slider)}
               title={sliderLabels[i]}
               dir="ltr"
-              className={`max-w-[160px] truncate px-3 py-0.5 rounded-full text-xs font-medium transition-colors
+              className={`max-w-40 truncate px-3 py-0.5 rounded-full text-xs font-medium transition-colors
                 ${currentSlider?.audio === slider.audio ? 'bg-[#e8192c] text-white' : inactiveTab}`}
             >
               {sliderLabels[i] ?? `#${i + 1}`}
