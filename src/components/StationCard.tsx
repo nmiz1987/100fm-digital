@@ -13,6 +13,7 @@ interface StationCardProps {
   isActive: boolean
   isFavorite: boolean
   isHidden: boolean
+  darkMode: boolean
   onPlay: () => void
   onToggleFavorite: () => void
   onToggleHide: () => void
@@ -23,6 +24,8 @@ export function StationCard({
   isPlaying,
   isActive,
   isFavorite,
+  isHidden,
+  darkMode,
   onPlay,
   onToggleFavorite,
   onToggleHide,
@@ -34,8 +37,9 @@ export function StationCard({
     <div
       className={`
         relative group rounded-xl overflow-hidden cursor-pointer transition-all duration-200
-        bg-[#1a1a1a] hover:bg-[#242424]
-        ${isActive ? 'ring-2 ring-[#e8192c] shadow-lg shadow-[#e8192c]/20' : 'hover:ring-1 hover:ring-white/10'}
+        ${isHidden ? 'opacity-40' : ''}
+        ${darkMode ? 'bg-[#1a1a1a] hover:bg-[#242424]' : 'bg-white hover:bg-gray-50 border border-gray-200 shadow-sm'}
+        ${isActive ? 'ring-2 ring-[#e8192c] shadow-lg shadow-[#e8192c]/20' : darkMode ? 'hover:ring-1 hover:ring-white/10' : 'hover:ring-1 hover:ring-gray-300'}
       `}
       onClick={onPlay}
       onMouseEnter={() => setShowActions(true)}
@@ -89,32 +93,34 @@ export function StationCard({
 
         {/* Action buttons */}
         <div
-          className={`absolute top-2 left-2 flex gap-1 transition-opacity duration-150 ${showActions || isFavorite ? 'opacity-100' : 'opacity-0'}`}
+          className={`absolute top-2 left-2 flex gap-1 transition-opacity duration-150 ${showActions || isFavorite || isHidden ? 'opacity-100' : 'opacity-0'}`}
           onClick={(e) => e.stopPropagation()}
         >
-          <button
-            onClick={onToggleFavorite}
-            className={`w-7 h-7 rounded-full flex items-center justify-center text-sm transition-colors
-              ${isFavorite ? 'bg-[#e8192c] text-white' : 'bg-black/60 text-white/70 hover:text-white'}`}
-            title={isFavorite ? 'הסר ממועדפים' : 'הוסף למועדפים'}
-          >
-            {isFavorite ? '♥' : '♡'}
-          </button>
+          {!isHidden && (
+            <button
+              onClick={onToggleFavorite}
+              className={`w-7 h-7 rounded-full flex items-center justify-center text-sm transition-colors
+                ${isFavorite ? 'bg-[#e8192c] text-white' : 'bg-black/60 text-white/70 hover:text-white'}`}
+              title={isFavorite ? 'הסר ממועדפים' : 'הוסף למועדפים'}
+            >
+              {isFavorite ? '♥' : '♡'}
+            </button>
+          )}
           <button
             onClick={onToggleHide}
-            className="w-7 h-7 rounded-full bg-black/60 text-white/70 hover:text-white flex items-center justify-center text-xs transition-colors"
-            title="הסתר תחנה"
+            className={`w-7 h-7 rounded-full flex items-center justify-center text-xs transition-colors ${isHidden ? 'bg-[#e8192c] text-white' : 'bg-black/60 text-white/70 hover:text-white'}`}
+            title={isHidden ? 'הצג תחנה' : 'הסתר תחנה'}
           >
-            👁
+            {isHidden ? '🚫' : '👁'}
           </button>
         </div>
       </div>
 
       {/* Info */}
       <div className="p-3">
-        <p className="font-semibold text-white text-sm truncate">{station.name}</p>
+        <p className={`font-semibold text-sm truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>{station.name}</p>
         {station.description && (
-          <p className="text-white/40 text-xs mt-0.5 line-clamp-2 leading-relaxed">
+          <p className={`text-xs mt-0.5 line-clamp-2 leading-relaxed ${darkMode ? 'text-white/40' : 'text-gray-400'}`}>
             {station.description.split('\n')[0]}
           </p>
         )}

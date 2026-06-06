@@ -17,6 +17,7 @@ const defaultProps = {
   isActive: false,
   isFavorite: false,
   isHidden: false,
+  darkMode: true,
   onPlay: vi.fn(),
   onToggleFavorite: vi.fn(),
   onToggleHide: vi.fn(),

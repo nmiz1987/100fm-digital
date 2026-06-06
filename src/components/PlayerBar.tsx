@@ -1,20 +1,21 @@
-import type { Station, Slider, NowPlaying } from '../types'
+import type { Station, Slider, NowPlaying } from '../types';
 
 interface PlayerBarProps {
-  station: Station
-  currentSlider: Slider | null
-  sliderLabels: string[]
-  nowPlaying: NowPlaying | null
-  isPlaying: boolean
-  isLoading: boolean
-  volume: number
-  isFavorite: boolean
-  onPlayPause: () => void
-  onStop: () => void
-  onVolumeChange: (v: number) => void
-  onToggleFavorite: () => void
-  onSelectLive: () => void
-  onSelectSlider: (slider: Slider) => void
+  station: Station;
+  currentSlider: Slider | null;
+  sliderLabels: string[];
+  nowPlaying: NowPlaying | null;
+  isPlaying: boolean;
+  isLoading: boolean;
+  volume: number;
+  isFavorite: boolean;
+  darkMode: boolean;
+  onPlayPause: () => void;
+  onStop: () => void;
+  onVolumeChange: (v: number) => void;
+  onToggleFavorite: () => void;
+  onSelectLive: () => void;
+  onSelectSlider: (slider: Slider) => void;
 }
 
 export function PlayerBar({
@@ -26,6 +27,7 @@ export function PlayerBar({
   isLoading,
   volume,
   isFavorite,
+  darkMode,
   onPlayPause,
   onStop,
   onVolumeChange,
@@ -33,13 +35,17 @@ export function PlayerBar({
   onSelectLive,
   onSelectSlider,
 }: PlayerBarProps) {
-  const hasSliders = (station.sliders?.length ?? 0) > 0
-  const trackLine = nowPlaying?.artist && nowPlaying?.name
-    ? `${nowPlaying.artist} — ${nowPlaying.name}`
-    : nowPlaying?.name || null
+  const hasSliders = (station.sliders?.length ?? 0) > 0;
+  const trackLine = nowPlaying?.artist && nowPlaying?.name ? `${nowPlaying.artist} — ${nowPlaying.name}` : nowPlaying?.name || null;
+
+  const inactiveTab = darkMode
+    ? 'bg-white/8 text-white/50 hover:text-white hover:bg-white/12'
+    : 'bg-gray-100 text-gray-500 hover:text-gray-800 hover:bg-gray-200';
 
   return (
-    <div className={`fixed bottom-0 left-0 right-0 z-50 bg-[#111111]/98 backdrop-blur border-t border-white/8 flex flex-col ${hasSliders ? 'pb-1' : ''}`}>
+    <div
+      className={`fixed bottom-0 left-0 right-0 z-50 backdrop-blur border-t flex flex-col ${hasSliders ? 'pb-1' : ''} ${darkMode ? 'bg-[#111111]/98 border-white/8' : 'bg-white/98 border-gray-200 shadow-[0_-1px_8px_rgba(0,0,0,0.08)]'}`}
+    >
       {/* Main row */}
       <div className="flex items-center gap-3 px-4 py-2 h-[70px] md:h-[72px]">
         {/* Station info */}
@@ -48,19 +54,19 @@ export function PlayerBar({
             src={station.cover ?? station.logo}
             alt={station.name}
             className="h-10 w-10 rounded object-cover shrink-0"
-            onError={(e) => { (e.currentTarget as HTMLImageElement).src = station.logo }}
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).src = station.logo;
+            }}
           />
           <div className="min-w-0">
-            <p className="text-white text-sm font-semibold truncate">{station.name}</p>
+            <p className={`text-sm font-semibold truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>{station.name}</p>
             {isLoading ? (
-              <p className="text-white/40 text-xs animate-pulse">טוען...</p>
+              <p className={`text-xs animate-pulse ${darkMode ? 'text-white/40' : 'text-gray-400'}`}>טוען...</p>
             ) : trackLine ? (
-              <p className="text-white/50 text-xs truncate">{trackLine}</p>
+              <p className={`text-xs truncate ${darkMode ? 'text-white/50' : 'text-gray-500'}`}>{trackLine}</p>
             ) : (
-              <p className="text-white/30 text-xs">
-                {currentSlider
-                  ? (sliderLabels[station.sliders?.indexOf(currentSlider) ?? -1] ?? 'שידור מושהה')
-                  : 'שידור חי'}
+              <p className={`text-xs ${darkMode ? 'text-white/30' : 'text-gray-400'}`}>
+                {currentSlider ? (sliderLabels[station.sliders?.indexOf(currentSlider) ?? -1] ?? 'שידור מושהה') : 'שידור חי'}
               </p>
             )}
           </div>
@@ -71,7 +77,7 @@ export function PlayerBar({
           <button
             onClick={onToggleFavorite}
             className={`p-2 rounded-full transition-colors text-lg leading-none
-              ${isFavorite ? 'text-[#e8192c]' : 'text-white/40 hover:text-white/80'}`}
+              ${isFavorite ? 'text-[#e8192c]' : darkMode ? 'text-white/40 hover:text-white/80' : 'text-gray-400 hover:text-gray-700'}`}
             title={isFavorite ? 'הסר ממועדפים' : 'הוסף למועדפים'}
           >
             {isFavorite ? '♥' : '♡'}
@@ -95,7 +101,7 @@ export function PlayerBar({
 
           <button
             onClick={onStop}
-            className="p-2 text-white/40 hover:text-white/80 transition-colors text-sm rounded-full"
+            className={`p-2 transition-colors text-sm rounded-full ${darkMode ? 'text-white/40 hover:text-white/80' : 'text-gray-400 hover:text-gray-700'}`}
             title="עצור"
           >
             ✕
@@ -104,7 +110,7 @@ export function PlayerBar({
 
         {/* Volume */}
         <div className="hidden sm:flex items-center gap-2 shrink-0 w-32">
-          <span className="text-white/40 text-sm select-none">
+          <span className={`text-sm select-none ${darkMode ? 'text-white/40' : 'text-gray-400'}`}>
             {volume === 0 ? '🔇' : volume < 0.5 ? '🔉' : '🔊'}
           </span>
           <input
@@ -127,10 +133,7 @@ export function PlayerBar({
           <button
             onClick={onSelectLive}
             className={`px-3 py-0.5 rounded-full text-xs font-medium transition-colors
-              ${!currentSlider
-                ? 'bg-[#e8192c] text-white'
-                : 'bg-white/8 text-white/50 hover:text-white hover:bg-white/12'
-              }`}
+              ${!currentSlider ? 'bg-[#e8192c] text-white' : inactiveTab}`}
           >
             שידור חי
           </button>
@@ -141,10 +144,7 @@ export function PlayerBar({
               title={sliderLabels[i]}
               dir="ltr"
               className={`max-w-[160px] truncate px-3 py-0.5 rounded-full text-xs font-medium transition-colors
-                ${currentSlider?.audio === slider.audio
-                  ? 'bg-[#e8192c] text-white'
-                  : 'bg-white/8 text-white/50 hover:text-white hover:bg-white/12'
-                }`}
+                ${currentSlider?.audio === slider.audio ? 'bg-[#e8192c] text-white' : inactiveTab}`}
             >
               {sliderLabels[i] ?? `#${i + 1}`}
             </button>
@@ -152,5 +152,5 @@ export function PlayerBar({
         </div>
       )}
     </div>
-  )
+  );
 }

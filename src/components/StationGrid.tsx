@@ -12,6 +12,7 @@ interface StationGridProps {
   isPlaying: boolean
   favorites: string[]
   hidden: string[]
+  darkMode: boolean
   onPlay: (station: Station) => void
   onToggleFavorite: (slug: string) => void
   onToggleHide: (slug: string) => void
@@ -24,6 +25,7 @@ export function StationGrid({
   isPlaying,
   favorites,
   hidden,
+  darkMode,
   onPlay,
   onToggleFavorite,
   onToggleHide,
@@ -55,7 +57,7 @@ export function StationGrid({
   return (
     <div className="flex-1 p-4 max-w-7xl mx-auto w-full">
       {/* Tabs */}
-      <div className="flex gap-1 mb-5 border-b border-white/8 pb-0">
+      <div className={`flex gap-1 mb-5 border-b pb-0 ${darkMode ? 'border-white/8' : 'border-gray-200'}`}>
         {tabs.map((t) => (
           <button
             key={t.id}
@@ -63,7 +65,7 @@ export function StationGrid({
             className={`px-4 py-2.5 text-sm font-medium transition-colors relative
               ${tab === t.id
                 ? 'text-[#e8192c]'
-                : 'text-white/50 hover:text-white/80'
+                : darkMode ? 'text-white/50 hover:text-white/80' : 'text-gray-400 hover:text-gray-700'
               }`}
           >
             {t.label}
@@ -76,7 +78,7 @@ export function StationGrid({
 
       {/* Grid */}
       {filtered.length === 0 ? (
-        <div className="text-center text-white/30 py-20">
+        <div className={`text-center py-20 ${darkMode ? 'text-white/30' : 'text-gray-400'}`}>
           <div className="text-4xl mb-3">📻</div>
           <p className="text-sm">לא נמצאו תחנות</p>
         </div>
@@ -90,6 +92,7 @@ export function StationGrid({
               isPlaying={isPlaying && activeSlug === station.slug}
               isFavorite={favorites.includes(station.slug)}
               isHidden={hidden.includes(station.slug)}
+              darkMode={darkMode}
               onPlay={() => onPlay(station)}
               onToggleFavorite={() => onToggleFavorite(station.slug)}
               onToggleHide={() => onToggleHide(station.slug)}
@@ -103,9 +106,13 @@ export function StationGrid({
         <div className="mt-6 text-center">
           <button
             onClick={() => setShowHidden(!showHidden)}
-            className="text-white/30 hover:text-white/60 text-sm transition-colors"
+            className={`text-sm px-4 py-1.5 rounded-full border transition-colors ${
+              darkMode
+                ? 'border-white/15 text-white/50 hover:text-white hover:border-white/30'
+                : 'border-gray-300 text-gray-500 hover:text-gray-800 hover:border-gray-400'
+            }`}
           >
-            {showHidden ? `הסתר תחנות מוסתרות` : `הצג תחנות מוסתרות (${hiddenCount})`}
+            {showHidden ? 'הסתר תחנות מוסתרות' : `הצג תחנות מוסתרות (${hiddenCount})`}
           </button>
         </div>
       )}
