@@ -13,18 +13,4 @@ export default defineConfig({
     react({ babel: { plugins: [['babel-plugin-react-compiler', {}]] } }),
     tailwindcss(),
   ],
-  server: {
-    proxy: {
-      '/app-proxy': {
-        target: 'https://digital.100fm.co.il',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/app-proxy/, ''),
-      },
-      '/nowplaying-proxy': {
-        target: 'https://digital.100fm.co.il',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/nowplaying-proxy/, ''),
-      },
-    },
-  },
 })

@@ -16,7 +16,7 @@ export function useStations() {
 
     async function fetchStations() {
       try {
-        const res = await fetch('/app-proxy/app/', { signal: controller.signal });
+        const res = await fetch('https://digital.100fm.co.il/app/', { signal: controller.signal });
         console.log('fetchStations response:', res);
         const data = (await res.json()) as ApiResponse;
         console.log('fetchStations data:', data);

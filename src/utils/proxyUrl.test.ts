@@ -1,23 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { proxyInfoUrl, fetchNowPlayingJson } from './proxyUrl'
-
-describe('proxyInfoUrl', () => {
-  it('rewrites 100fm API URLs to use the nowplaying proxy', () => {
-    expect(proxyInfoUrl('https://digital.100fm.co.il/api/nowplaying/station/1')).toBe(
-      '/nowplaying-proxy/api/nowplaying/station/1'
-    )
-  })
-
-  it('leaves non-100fm URLs unchanged', () => {
-    expect(proxyInfoUrl('https://other.example.com/api/nowplaying')).toBe(
-      'https://other.example.com/api/nowplaying'
-    )
-  })
-
-  it('leaves relative URLs unchanged', () => {
-    expect(proxyInfoUrl('/some/local/path')).toBe('/some/local/path')
-  })
-})
+import { fetchNowPlayingJson } from './proxyUrl'
 
 describe('fetchNowPlayingJson', () => {
   beforeEach(() => {
@@ -48,13 +30,14 @@ describe('fetchNowPlayingJson', () => {
     expect(result).toBeNull()
   })
 
-  it('uses the proxy URL when fetching', async () => {
+  it('fetches the URL directly without rewriting', async () => {
     const mockFetch = vi.fn().mockResolvedValue({
       text: () => Promise.resolve('{"artist":"A","name":"B"}'),
     } as unknown as Response)
     global.fetch = mockFetch
 
-    await fetchNowPlayingJson('https://digital.100fm.co.il/api/nowplaying/s/1')
-    expect(mockFetch).toHaveBeenCalledWith('/nowplaying-proxy/api/nowplaying/s/1')
+    const url = 'https://digital.100fm.co.il/api/nowplaying/s/1'
+    await fetchNowPlayingJson(url)
+    expect(mockFetch).toHaveBeenCalledWith(url)
   })
 })
