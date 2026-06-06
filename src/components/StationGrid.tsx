@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { Station } from '../types'
 import { StationCard } from './StationCard'
 
-type Tab = 'all' | 'favorites' | 'popular'
+type Tab = 'all' | 'favorites' | 'popular' | 'hidden'
 
 interface StationGridProps {
   stations: Station[]
@@ -31,18 +31,21 @@ export function StationGrid({
   onToggleHide,
 }: StationGridProps) {
   const [tab, setTab] = useState<Tab>('all')
-  const [showHidden, setShowHidden] = useState(false)
 
   const normalizedSearch = search.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
 
   const filtered = stations.filter((s) => {
-    if (!showHidden && hidden.includes(s.slug)) return false
+    if (tab === 'hidden') {
+      if (!hidden.includes(s.slug)) return false
+    } else {
+      if (hidden.includes(s.slug)) return false
+      if (tab === 'favorites') return favorites.includes(s.slug)
+      if (tab === 'popular') return s.popular === 'true'
+    }
     if (search) {
       const name = s.name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
       if (!name.includes(normalizedSearch)) return false
     }
-    if (tab === 'favorites') return favorites.includes(s.slug)
-    if (tab === 'popular') return s.popular === 'true'
     return true
   })
 
@@ -52,6 +55,7 @@ export function StationGrid({
     { id: 'all', label: 'הכל' },
     { id: 'favorites', label: `מועדפים${favorites.length ? ` (${favorites.length})` : ''}` },
     { id: 'popular', label: 'פופולרי' },
+    ...(hiddenCount > 0 ? [{ id: 'hidden' as Tab, label: `מוסתרות (${hiddenCount})` }] : []),
   ]
 
   return (
@@ -101,21 +105,6 @@ export function StationGrid({
         </div>
       )}
 
-      {/* Hidden stations toggle */}
-      {hiddenCount > 0 && !search && (
-        <div className="mt-6 text-center">
-          <button
-            onClick={() => setShowHidden(!showHidden)}
-            className={`text-sm px-4 py-1.5 rounded-full border transition-colors ${
-              darkMode
-                ? 'border-white/15 text-white/50 hover:text-white hover:border-white/30'
-                : 'border-gray-300 text-gray-500 hover:text-gray-800 hover:border-gray-400'
-            }`}
-          >
-            {showHidden ? 'הסתר תחנות מוסתרות' : `הצג תחנות מוסתרות (${hiddenCount})`}
-          </button>
-        </div>
-      )}
     </div>
   )
 }

@@ -78,20 +78,21 @@ describe('StationGrid', () => {
     expect(screen.queryByText('Jazz Club')).not.toBeInTheDocument()
   })
 
-  it('shows toggle button when there are hidden stations', () => {
+  it('shows מוסתרות tab when there are hidden stations', () => {
     render(<StationGrid {...defaultProps} hidden={['jazz-club']} />)
-    expect(screen.getByText(/הצג תחנות מוסתרות/)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'מוסתרות (1)' })).toBeInTheDocument()
   })
 
-  it('reveals hidden stations when toggle is clicked', () => {
+  it('does not show מוסתרות tab when no stations are hidden', () => {
+    render(<StationGrid {...defaultProps} hidden={[]} />)
+    expect(screen.queryByRole('button', { name: /מוסתרות/ })).not.toBeInTheDocument()
+  })
+
+  it('shows only hidden stations on the מוסתרות tab', () => {
     render(<StationGrid {...defaultProps} hidden={['jazz-club']} />)
-    fireEvent.click(screen.getByText(/הצג תחנות מוסתרות/))
+    fireEvent.click(screen.getByRole('button', { name: 'מוסתרות (1)' }))
     expect(screen.getByText('Jazz Club')).toBeInTheDocument()
-  })
-
-  it('does not show hidden toggle when search is active', () => {
-    render(<StationGrid {...defaultProps} hidden={['jazz-club']} search="rock" />)
-    expect(screen.queryByText(/הצג תחנות מוסתרות/)).not.toBeInTheDocument()
+    expect(screen.queryByText('Rock FM')).not.toBeInTheDocument()
   })
 
   it('calls onPlay when a station card is clicked', () => {
