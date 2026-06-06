@@ -57,4 +57,17 @@ describe('useStations', () => {
     expect(result.current.error).toBe('לא ניתן לטעון את רשימת התחנות')
     expect(result.current.stations).toEqual([])
   })
+
+  it('ignores AbortError and keeps loading state', async () => {
+    const abortError = new DOMException('Aborted', 'AbortError')
+    global.fetch = vi.fn().mockRejectedValue(abortError)
+
+    const { result } = renderHook(() => useStations())
+
+    // Wait a tick for the promise to settle
+    await new Promise((r) => setTimeout(r, 0))
+
+    expect(result.current.error).toBeNull()
+    expect(result.current.stations).toEqual([])
+  })
 })

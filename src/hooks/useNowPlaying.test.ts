@@ -45,6 +45,17 @@ describe('useNowPlaying', () => {
     expect(result.current).toBeNull()
   })
 
+  it('does not update state when fetch returns null', async () => {
+    mockFetch.mockResolvedValue(null)
+
+    const { result } = renderHook(() =>
+      useNowPlaying('https://digital.100fm.co.il/api/nowplaying/s/1')
+    )
+
+    await waitFor(() => expect(mockFetch).toHaveBeenCalled())
+    expect(result.current).toBeNull()
+  })
+
   it('polls every 30 seconds', async () => {
     vi.useFakeTimers()
     mockFetch.mockResolvedValue({ artist: 'A', name: 'B' })

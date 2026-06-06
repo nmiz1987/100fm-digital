@@ -57,6 +57,17 @@ describe('useSliderLabels', () => {
     await waitFor(() => expect(result.current[0]).toBe('Pink Floyd'))
   })
 
+  it('uses only track name when artist is missing', async () => {
+    mockFetch.mockResolvedValue({ artist: '', name: 'Blue Moon' })
+
+    const sliders: Slider[] = [
+      { audio: 'http://stream1', info: 'https://digital.100fm.co.il/api/nowplaying/s/1' },
+    ]
+    const { result } = renderHook(() => useSliderLabels(sliders, 'MyStation'))
+
+    await waitFor(() => expect(result.current[0]).toBe('Blue Moon'))
+  })
+
   it('falls back to station label when API returns empty data', async () => {
     mockFetch.mockResolvedValue({ artist: '', name: '' })
 

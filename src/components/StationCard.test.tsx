@@ -86,4 +86,21 @@ describe('StationCard', () => {
     fireEvent.click(screen.getByTitle('הוסף למועדפים'))
     expect(onPlay).not.toHaveBeenCalled()
   })
+
+  it('hides favorite button when station is hidden', () => {
+    render(<StationCard {...defaultProps} isHidden={true} />)
+    expect(screen.queryByTitle('הוסף למועדפים')).not.toBeInTheDocument()
+    expect(screen.queryByTitle('הסר ממועדפים')).not.toBeInTheDocument()
+  })
+
+  it('shows unhide button when station is hidden', () => {
+    render(<StationCard {...defaultProps} isHidden={true} />)
+    expect(screen.getByTitle('הצג תחנה')).toBeInTheDocument()
+  })
+
+  it('shows paused overlay (play button) when active but not playing', () => {
+    render(<StationCard {...defaultProps} isActive={true} isPlaying={false} />)
+    const plays = screen.getAllByText('▶')
+    expect(plays.length).toBeGreaterThan(0)
+  })
 })

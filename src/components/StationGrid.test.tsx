@@ -101,4 +101,25 @@ describe('StationGrid', () => {
     fireEvent.click(screen.getByText('Rock FM'))
     expect(onPlay).toHaveBeenCalledWith(stations[0])
   })
+
+  it('calls onToggleFavorite with station slug when heart clicked', () => {
+    const onToggleFavorite = vi.fn()
+    render(<StationGrid {...defaultProps} onToggleFavorite={onToggleFavorite} />)
+    fireEvent.click(screen.getAllByTitle('הוסף למועדפים')[0])
+    expect(onToggleFavorite).toHaveBeenCalledWith(stations[0].slug)
+  })
+
+  it('calls onToggleHide with station slug when hide clicked', () => {
+    const onToggleHide = vi.fn()
+    render(<StationGrid {...defaultProps} onToggleHide={onToggleHide} />)
+    fireEvent.click(screen.getAllByTitle('הסתר תחנה')[0])
+    expect(onToggleHide).toHaveBeenCalledWith(stations[0].slug)
+  })
+
+  it('shows active tab indicator on selected tab', () => {
+    render(<StationGrid {...defaultProps} />)
+    fireEvent.click(screen.getByRole('button', { name: 'פופולרי' }))
+    const popularBtn = screen.getByRole('button', { name: 'פופולרי' })
+    expect(popularBtn.querySelector('span')).toBeInTheDocument()
+  })
 })
