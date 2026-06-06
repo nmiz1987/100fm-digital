@@ -10,7 +10,7 @@ export default defineConfig({
     css: false,
   },
   plugins: [
-    react(),
+    react({ babel: { plugins: [['babel-plugin-react-compiler', {}]] } }),
     tailwindcss(),
   ],
   server: {

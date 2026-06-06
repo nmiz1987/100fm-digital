@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import { Header } from './components/Header'
 import { StationGrid } from './components/StationGrid'
 import { PlayerBar } from './components/PlayerBar'
@@ -23,49 +23,49 @@ export default function App() {
   const nowPlaying = useNowPlaying(activeInfoUrl)
   const sliderLabels = useSliderLabels(player.currentStation?.sliders, player.currentStation?.name ?? '')
 
-  const handleVolumeChange = useCallback((v: number) => {
+  const handleVolumeChange = (v: number) => {
     player.setVolume(v)
     setVolumeStorage(v)
-  }, [player, setVolumeStorage])
+  }
 
-  const handlePlay = useCallback((station: Station) => {
+  const handlePlay = (station: Station) => {
     if (player.currentStation?.slug === station.slug && !player.currentSlider) {
       if (player.isPlaying) player.pause()
       else player.resume()
     } else {
       player.play(station)
     }
-  }, [player])
+  }
 
-  const handlePlayPause = useCallback(() => {
+  const handlePlayPause = () => {
     if (player.isPlaying) player.pause()
     else player.resume()
-  }, [player])
+  }
 
-  const handleSelectSlider = useCallback((slider: Slider) => {
+  const handleSelectSlider = (slider: Slider) => {
     if (player.currentStation) player.playSlider(slider, player.currentStation)
-  }, [player])
+  }
 
-  const handleSelectLive = useCallback(() => {
+  const handleSelectLive = () => {
     if (player.currentStation) player.playLive(player.currentStation)
-  }, [player])
+  }
 
-  const handleToggleFavorite = useCallback((slug: string) => {
+  const handleToggleFavorite = (slug: string) => {
     setFavorites((prev) =>
       prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]
     )
-  }, [setFavorites])
+  }
 
-  const handleToggleHide = useCallback((slug: string) => {
+  const handleToggleHide = (slug: string) => {
     setHidden((prev) =>
       prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]
     )
     if (player.currentStation?.slug === slug) player.stop()
-  }, [setHidden, player])
+  }
 
-  const handleDarkModeToggle = useCallback(() => {
+  const handleDarkModeToggle = () => {
     setDarkMode((prev) => !prev)
-  }, [setDarkMode])
+  }
 
   if (darkMode) {
     document.documentElement.classList.add('dark')

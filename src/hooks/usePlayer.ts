@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Hls from 'hls.js'
 import type { Station, Slider } from '../types'
 
@@ -31,14 +31,14 @@ export function usePlayer(initialVolume: number) {
     }
   }, [initialVolume])
 
-  const destroyHls = useCallback(() => {
+  const destroyHls = () => {
     if (hlsRef.current) {
       hlsRef.current.destroy()
       hlsRef.current = null
     }
-  }, [])
+  }
 
-  const loadAudio = useCallback((src: string, fallbackSrc?: string) => {
+  const loadAudio = (src: string, fallbackSrc?: string) => {
     const audio = audioRef.current
     if (!audio) return
     destroyHls()
@@ -65,30 +65,30 @@ export function usePlayer(initialVolume: number) {
       audio.src = fallbackSrc ?? src
       void audio.play()
     }
-  }, [destroyHls])
+  }
 
-  const play = useCallback((station: Station) => {
+  const play = (station: Station) => {
     setCurrentStation(station)
     setCurrentSlider(null)
     loadAudio(station.audio, station.audioA)
-  }, [loadAudio])
+  }
 
-  const playSlider = useCallback((slider: Slider, station: Station) => {
+  const playSlider = (slider: Slider, station: Station) => {
     setCurrentStation(station)
     setCurrentSlider(slider)
     loadAudio(slider.audio)
-  }, [loadAudio])
+  }
 
-  const playLive = useCallback((station: Station) => {
+  const playLive = (station: Station) => {
     setCurrentSlider(null)
     loadAudio(station.audio, station.audioA)
-  }, [loadAudio])
+  }
 
-  const pause = useCallback(() => { audioRef.current?.pause() }, [])
+  const pause = () => { audioRef.current?.pause() }
 
-  const resume = useCallback(() => { void audioRef.current?.play() }, [])
+  const resume = () => { void audioRef.current?.play() }
 
-  const stop = useCallback(() => {
+  const stop = () => {
     destroyHls()
     const audio = audioRef.current
     if (audio) { audio.pause(); audio.src = '' }
@@ -96,13 +96,13 @@ export function usePlayer(initialVolume: number) {
     setCurrentSlider(null)
     setIsPlaying(false)
     setIsLoading(false)
-  }, [destroyHls])
+  }
 
-  const setVolume = useCallback((v: number) => {
+  const setVolume = (v: number) => {
     const clamped = Math.max(0, Math.min(1, v))
     setVolumeState(clamped)
     if (audioRef.current) audioRef.current.volume = clamped
-  }, [])
+  }
 
   return { currentStation, currentSlider, isPlaying, isLoading, volume, play, playSlider, playLive, pause, resume, stop, setVolume }
 }
