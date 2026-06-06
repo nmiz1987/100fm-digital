@@ -1,33 +1,31 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect } from 'react';
 
 interface HeaderProps {
-  search: string
-  onSearchChange: (v: string) => void
-  darkMode: boolean
-  onDarkModeToggle: () => void
+  search: string;
+  onSearchChange: (v: string) => void;
+  darkMode: boolean;
+  onDarkModeToggle: () => void;
 }
 
 export function Header({ search, onSearchChange, darkMode, onDarkModeToggle }: HeaderProps) {
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') onSearchChange('')
+      if (e.key === 'Escape') onSearchChange('');
     }
-    window.addEventListener('keydown', handleKey)
-    return () => window.removeEventListener('keydown', handleKey)
-  }, [onSearchChange])
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [onSearchChange]);
 
   return (
-    <header className={`sticky top-0 z-40 backdrop-blur border-b px-4 py-3 ${darkMode ? 'bg-[#0f0f0f]/95 border-white/5' : 'bg-white/95 border-gray-200 shadow-sm'}`}>
+    <header
+      className={`sticky top-0 z-40 backdrop-blur border-b px-4 py-3 ${darkMode ? 'bg-[#0f0f0f]/95 border-white/5' : 'bg-white/95 border-gray-200 shadow-sm'}`}
+    >
       <div className="max-w-7xl mx-auto flex items-center gap-3">
         {/* Brand */}
         <div className="flex items-center gap-2 shrink-0">
-          <img
-            src="https://d203uamca1bsc4.cloudfront.net/app/logo/x-100fmlive.png"
-            alt="100FM"
-            className="h-8 w-8 rounded"
-          />
+          <img src="/icon.svg" alt="100FM" className="h-8 w-8 shrink-0 block" />
           <span className={`font-bold text-lg hidden sm:block ${darkMode ? 'text-white' : 'text-gray-900'}`}>100FM Digital</span>
         </div>
 
@@ -68,5 +66,5 @@ export function Header({ search, onSearchChange, darkMode, onDarkModeToggle }: H
         </button>
       </div>
     </header>
-  )
+  );
 }
