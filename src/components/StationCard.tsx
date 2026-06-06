@@ -31,7 +31,6 @@ export function StationCard({
   onToggleHide,
 }: StationCardProps) {
   const [imgSrc, setImgSrc] = useState(station.cover ?? station.logo)
-  const [showActions, setShowActions] = useState(false)
 
   return (
     <div
@@ -42,8 +41,6 @@ export function StationCard({
         ${isActive ? 'ring-2 ring-[#e8192c] shadow-lg shadow-[#e8192c]/20' : darkMode ? 'hover:ring-1 hover:ring-white/10' : 'hover:ring-1 hover:ring-gray-300'}
       `}
       onClick={onPlay}
-      onMouseEnter={() => setShowActions(true)}
-      onMouseLeave={() => setShowActions(false)}
     >
       {/* Cover image */}
       <div className="relative aspect-square overflow-hidden">
@@ -75,7 +72,7 @@ export function StationCard({
           </div>
         )}
 
-        {/* Hover play button */}
+        {/* Hover play button — desktop only */}
         {!isActive && (
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
             <div className="w-10 h-10 rounded-full bg-[#e8192c] flex items-center justify-center shadow-lg">
@@ -90,34 +87,33 @@ export function StationCard({
             פופולרי
           </div>
         )}
+      </div>
 
-        {/* Action buttons */}
-        <div
-          className={`absolute top-2 left-2 flex gap-1 transition-opacity duration-150 ${showActions || isFavorite || isHidden ? 'opacity-100' : 'opacity-0'}`}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {!isHidden && (
-            <button
-              onClick={onToggleFavorite}
-              className={`w-7 h-7 rounded-full flex items-center justify-center text-sm transition-colors
-                ${isFavorite ? 'bg-[#e8192c] text-white' : 'bg-black/60 text-white/70 hover:text-white'}`}
-              title={isFavorite ? 'הסר ממועדפים' : 'הוסף למועדפים'}
-            >
-              {isFavorite ? '♥' : '♡'}
-            </button>
-          )}
+      {/* Action row */}
+      <div
+        className={`flex items-center gap-3 px-3 pt-2 ${darkMode ? 'border-t border-white/5' : 'border-t border-gray-100'}`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {!isHidden && (
           <button
-            onClick={onToggleHide}
-            className={`w-7 h-7 rounded-full flex items-center justify-center text-xs transition-colors ${isHidden ? 'bg-[#e8192c] text-white' : 'bg-black/60 text-white/70 hover:text-white'}`}
-            title={isHidden ? 'הצג תחנה' : 'הסתר תחנה'}
+            onClick={onToggleFavorite}
+            className={`text-xl leading-none transition-colors ${isFavorite ? 'text-[#e8192c]' : darkMode ? 'text-white/40 hover:text-white/80' : 'text-gray-400 hover:text-gray-700'}`}
+            title={isFavorite ? 'הסר ממועדפים' : 'הוסף למועדפים'}
           >
-            {isHidden ? '🚫' : '👁'}
+            {isFavorite ? '♥' : '♡'}
           </button>
-        </div>
+        )}
+        <button
+          onClick={onToggleHide}
+          className={`text-base leading-none transition-colors ${isHidden ? 'text-[#e8192c]' : darkMode ? 'text-white/40 hover:text-white/80' : 'text-gray-400 hover:text-gray-700'}`}
+          title={isHidden ? 'הצג תחנה' : 'הסתר תחנה'}
+        >
+          {isHidden ? '🚫' : '👁'}
+        </button>
       </div>
 
       {/* Info */}
-      <div className="p-3">
+      <div className="px-3 pt-1.5 pb-3">
         <p className={`font-semibold text-sm truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>{station.name}</p>
         {station.description && (
           <p className={`text-xs mt-0.5 line-clamp-2 leading-relaxed ${darkMode ? 'text-white/40' : 'text-gray-400'}`}>
