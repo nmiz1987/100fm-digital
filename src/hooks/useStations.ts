@@ -17,9 +17,7 @@ export function useStations() {
     async function fetchStations() {
       try {
         const res = await fetch('https://digital.100fm.co.il/app/', { signal: controller.signal });
-        console.log('fetchStations response:', res);
         const data = (await res.json()) as ApiResponse;
-        console.log('fetchStations data:', data);
         const list = Array.isArray(data.stations) ? data.stations : [];
         setStations(list.filter((s) => s.slug && s.audio));
         setLoading(false);
