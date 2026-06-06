@@ -8,10 +8,7 @@ export function useNowPlaying(infoUrl: string | undefined) {
   const [nowPlaying, setNowPlaying] = useState<NowPlaying | null>(null)
 
   useEffect(() => {
-    if (!infoUrl) {
-      setNowPlaying(null)
-      return
-    }
+    if (!infoUrl) return
 
     let cancelled = false
 
@@ -29,5 +26,5 @@ export function useNowPlaying(infoUrl: string | undefined) {
     }
   }, [infoUrl])
 
-  return nowPlaying
+  return infoUrl ? nowPlaying : null
 }

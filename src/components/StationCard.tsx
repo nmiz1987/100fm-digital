@@ -1,4 +1,10 @@
 import { useState } from 'react'
+
+const BAR_STYLES = [1, 2, 3, 4].map((i) => ({
+  height: `${20 + Math.random() * 60}%`,
+  animationDelay: `${i * 0.1}s`,
+  animationDuration: `${0.6 + Math.random() * 0.4}s`,
+}))
 import type { Station } from '../types'
 
 interface StationCardProps {
@@ -49,15 +55,11 @@ export function StationCard({
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
             {isPlaying ? (
               <div className="flex gap-0.5 items-end h-6">
-                {[1, 2, 3, 4].map((i) => (
+                {BAR_STYLES.map((style, idx) => (
                   <div
-                    key={i}
+                    key={idx}
                     className="w-1 bg-[#e8192c] rounded-full animate-pulse"
-                    style={{
-                      height: `${20 + Math.random() * 60}%`,
-                      animationDelay: `${i * 0.1}s`,
-                      animationDuration: `${0.6 + Math.random() * 0.4}s`,
-                    }}
+                    style={style}
                   />
                 ))}
               </div>

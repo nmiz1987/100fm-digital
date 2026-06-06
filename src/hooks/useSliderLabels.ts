@@ -20,10 +20,7 @@ export function useSliderLabels(sliders: Slider[] | undefined, stationName: stri
   const infoKey = sliders?.map((s) => s.info ?? '').join('|') ?? ''
 
   useEffect(() => {
-    if (!sliders || sliders.length === 0) {
-      setLabels([])
-      return
-    }
+    if (!sliders || sliders.length === 0) return
 
     let cancelled = false
 
@@ -50,5 +47,5 @@ export function useSliderLabels(sliders: Slider[] | undefined, stationName: stri
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [infoKey, stationName])
 
-  return labels
+  return sliders && sliders.length > 0 ? labels : []
 }
