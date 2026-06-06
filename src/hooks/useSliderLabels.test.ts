@@ -31,8 +31,8 @@ describe('useSliderLabels', () => {
     const { result } = renderHook(() => useSliderLabels(sliders, 'MyStation'))
 
     await waitFor(() => expect(result.current).toHaveLength(2))
-    expect(result.current[0]).toBe('MyStation #1')
-    expect(result.current[1]).toBe('MyStation #2')
+    expect(result.current[0]).toBe('MyStation #2')
+    expect(result.current[1]).toBe('MyStation #3')
   })
 
   it('builds label as "artist — name" when both are present', async () => {
@@ -65,7 +65,7 @@ describe('useSliderLabels', () => {
     ]
     const { result } = renderHook(() => useSliderLabels(sliders, 'MyStation'))
 
-    await waitFor(() => expect(result.current[0]).toBe('MyStation #1'))
+    await waitFor(() => expect(result.current[0]).toBe('MyStation #2'))
   })
 
   it('polls every 30 seconds', async () => {

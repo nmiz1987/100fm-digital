@@ -30,9 +30,9 @@ export function useSliderLabels(sliders: Slider[] | undefined, stationName: stri
         sliders.map((slider, i) =>
           slider.info
             ? fetchNowPlayingJson(slider.info).then((data) =>
-                buildLabel(data, `${stationName} #${i + 1}`)
+                buildLabel(data, `${stationName} #${i + 2}`)
               )
-            : Promise.resolve(`${stationName} #${i + 1}`)
+            : Promise.resolve(`${stationName} #${i + 2}`)
         )
       )
       if (!cancelled) setLabels(results)

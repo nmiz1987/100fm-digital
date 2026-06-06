@@ -66,7 +66,7 @@ export function PlayerBar({
               <p className={`text-xs truncate ${darkMode ? 'text-white/50' : 'text-gray-500'}`}>{trackLine}</p>
             ) : (
               <p className={`text-xs ${darkMode ? 'text-white/30' : 'text-gray-400'}`}>
-                {currentSlider ? (sliderLabels[station.sliders?.indexOf(currentSlider) ?? -1] ?? 'שידור מושהה') : 'שידור חי'}
+                {currentSlider ? (sliderLabels[station.sliders?.indexOf(currentSlider) ?? -1] ?? 'שידור מושהה') : hasSliders ? `${station.name} #1` : 'שידור חי'}
               </p>
             )}
           </div>
@@ -135,7 +135,7 @@ export function PlayerBar({
             className={`px-3 py-0.5 rounded-full text-xs font-medium transition-colors
               ${!currentSlider ? 'bg-[#e8192c] text-white' : inactiveTab}`}
           >
-            שידור חי
+            {station.name} #1
           </button>
           {station.sliders!.map((slider, i) => (
             <button
@@ -146,7 +146,7 @@ export function PlayerBar({
               className={`max-w-40 truncate px-3 py-0.5 rounded-full text-xs font-medium transition-colors
                 ${currentSlider?.audio === slider.audio ? 'bg-[#e8192c] text-white' : inactiveTab}`}
             >
-              {sliderLabels[i] ?? `#${i + 1}`}
+              {sliderLabels[i] ?? `${station.name} #${i + 2}`}
             </button>
           ))}
         </div>
