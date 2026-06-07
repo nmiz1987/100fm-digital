@@ -2,11 +2,13 @@ import { useState, useEffect, useRef } from 'react';
 import { Header } from './components/Header';
 import { StationGrid } from './components/StationGrid';
 import { PlayerBar } from './components/PlayerBar';
+import { LoadingTimeoutToast } from './components/LoadingTimeoutToast';
 import { useStations } from './hooks/useStations';
 import { usePlayer } from './hooks/usePlayer';
 import { useNowPlaying } from './hooks/useNowPlaying';
 import { useSliderLabels } from './hooks/useSliderLabels';
 import { useLocalStorage } from './hooks/useLocalStorage';
+import { useLoadingTimeoutWarning } from './hooks/useLoadingTimeoutWarning';
 import type { Slider, Station } from './types';
 
 export default function App() {
@@ -22,6 +24,7 @@ export default function App() {
   const activeInfoUrl = player.currentSlider?.info ?? player.currentStation?.info;
   const nowPlaying = useNowPlaying(activeInfoUrl);
   const sliderLabels = useSliderLabels(player.currentStation?.sliders, player.currentStation?.name ?? '');
+  const loadingTimeoutWarning = useLoadingTimeoutWarning(player.isLoading);
 
   const handleVolumeChange = (v: number) => {
     player.setVolume(v);
@@ -110,6 +113,12 @@ export default function App() {
   return (
     <div className={`min-h-screen flex flex-col ${darkMode ? 'bg-[#0f0f0f] text-white' : 'bg-gray-50 text-gray-900'}`}>
       <Header search={search} onSearchChange={setSearch} darkMode={darkMode} onDarkModeToggle={handleDarkModeToggle} />
+
+      <LoadingTimeoutToast
+        visible={loadingTimeoutWarning.visible}
+        darkMode={darkMode}
+        onDismiss={loadingTimeoutWarning.dismiss}
+      />
 
       <main className={`flex-1 flex flex-col ${player.currentStation ? 'pb-35' : ''}`}>
         {loading ? (
