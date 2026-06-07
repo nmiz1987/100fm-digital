@@ -67,11 +67,15 @@ export default function App() {
   const navigateRef = useRef<{ next: () => void; prev: () => void }>({ next: () => {}, prev: () => {} });
 
   useEffect(() => {
-    const visible = stations.filter(s => !hidden.includes(s.slug));
-    const idx = visible.findIndex(s => s.slug === player.currentStation?.slug);
+    const visible = stations.filter((s) => !hidden.includes(s.slug));
+    const idx = visible.findIndex((s) => s.slug === player.currentStation?.slug);
     navigateRef.current = {
-      next: () => { if (visible.length) player.play(visible[(idx + 1) % 35sible.length]); },
-      prev: () => { if (visible.length) player.play(visible[(idx - 1 + visible.length) % visible.length]); },
+      next: () => {
+        if (visible.length) player.play(visible[(idx + 1) % visible.length]);
+      },
+      prev: () => {
+        if (visible.length) player.play(visible[(idx - 1 + visible.length) % visible.length]);
+      },
     };
   }, [stations, hidden, player.currentStation?.slug, player]);
 
