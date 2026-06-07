@@ -1,23 +1,23 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
 const BAR_STYLES = [1, 2, 3, 4].map((i) => ({
   height: `${20 + Math.random() * 60}%`,
   animationDelay: `${i * 0.1}s`,
   animationDuration: `${0.6 + Math.random() * 0.4}s`,
-}))
-import type { Station } from '../types'
+}));
+import type { Station } from '../types';
 
 interface StationCardProps {
-  station: Station
-  isPlaying: boolean
-  isActive: boolean
-  isFavorite: boolean
-  isHidden: boolean
-  darkMode: boolean
-  viewMode?: 'grid' | 'list'
-  onPlay: () => void
-  onToggleFavorite: () => void
-  onToggleHide: () => void
+  station: Station;
+  isPlaying: boolean;
+  isActive: boolean;
+  isFavorite: boolean;
+  isHidden: boolean;
+  darkMode: boolean;
+  viewMode?: 'grid' | 'list';
+  onPlay: () => void;
+  onToggleFavorite: () => void;
+  onToggleHide: () => void;
 }
 
 export function StationCard({
@@ -32,7 +32,7 @@ export function StationCard({
   onToggleFavorite,
   onToggleHide,
 }: StationCardProps) {
-  const [imgSrc, setImgSrc] = useState(station.cover ?? station.logo)
+  const [imgSrc, setImgSrc] = useState(station.cover ?? station.logo);
 
   if (viewMode === 'list') {
     return (
@@ -47,12 +47,7 @@ export function StationCard({
       >
         {/* Thumbnail */}
         <div className="relative shrink-0 w-12 h-12 rounded-lg overflow-hidden">
-          <img
-            src={imgSrc}
-            alt={station.name}
-            className="w-full h-full object-cover"
-            onError={() => setImgSrc(station.logo)}
-          />
+          <img src={imgSrc} alt={station.name} className="w-full h-full object-cover" onError={() => setImgSrc(station.cover ?? station.logo)} />
           {isActive && (
             <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
               {isPlaying ? (
@@ -72,9 +67,7 @@ export function StationCard({
         <div className="flex-1 min-w-0">
           <p className={`font-semibold text-sm truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>{station.name}</p>
           {station.description && (
-            <p className={`text-xs truncate ${darkMode ? 'text-white/40' : 'text-gray-400'}`}>
-              {station.description.split('\n')[0]}
-            </p>
+            <p className={`text-xs truncate ${darkMode ? 'text-white/40' : 'text-gray-400'}`}>{station.description.split('\n')[0]}</p>
           )}
         </div>
 
@@ -95,20 +88,40 @@ export function StationCard({
             title={isHidden ? 'הצג תחנה' : 'הסתר תחנה'}
           >
             {isHidden ? (
-              <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
-                <line x1="1" y1="1" x2="23" y2="23"/>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="17"
+                height="17"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                <line x1="1" y1="1" x2="23" y2="23" />
               </svg>
             ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                <circle cx="12" cy="12" r="3"/>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="17"
+                height="17"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                <circle cx="12" cy="12" r="3" />
               </svg>
             )}
           </button>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -127,7 +140,7 @@ export function StationCard({
           src={imgSrc}
           alt={station.name}
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-          onError={() => setImgSrc(station.logo)}
+          onError={() => setImgSrc(station.cover ?? station.logo)}
         />
 
         {/* Playing overlay */}
@@ -136,11 +149,7 @@ export function StationCard({
             {isPlaying ? (
               <div className="flex gap-0.5 items-end h-6">
                 {BAR_STYLES.map((style, idx) => (
-                  <div
-                    key={idx}
-                    className="w-1 bg-[#e8192c] rounded-full animate-pulse"
-                    style={style}
-                  />
+                  <div key={idx} className="w-1 bg-[#e8192c] rounded-full animate-pulse" style={style} />
                 ))}
               </div>
             ) : (
@@ -162,9 +171,7 @@ export function StationCard({
 
         {/* Popular badge */}
         {station.popular === 'true' && (
-          <div className="absolute top-2 right-2 bg-[#e8192c] text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
-            פופולרי
-          </div>
+          <div className="absolute top-2 right-2 bg-[#e8192c] text-white text-[10px] font-bold px-1.5 py-0.5 rounded">פופולרי</div>
         )}
       </div>
 
@@ -188,14 +195,34 @@ export function StationCard({
           title={isHidden ? 'הצג תחנה' : 'הסתר תחנה'}
         >
           {isHidden ? (
-            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
-              <line x1="1" y1="1" x2="23" y2="23"/>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="17"
+              height="17"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+              <line x1="1" y1="1" x2="23" y2="23" />
             </svg>
           ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-              <circle cx="12" cy="12" r="3"/>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="17"
+              height="17"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
             </svg>
           )}
         </button>
@@ -211,5 +238,5 @@ export function StationCard({
         )}
       </div>
     </div>
-  )
+  );
 }

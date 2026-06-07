@@ -70,7 +70,7 @@ export default function App() {
     const visible = stations.filter(s => !hidden.includes(s.slug));
     const idx = visible.findIndex(s => s.slug === player.currentStation?.slug);
     navigateRef.current = {
-      next: () => { if (visible.length) player.play(visible[(idx + 1) % visible.length]); },
+      next: () => { if (visible.length) player.play(visible[(idx + 1) % 35sible.length]); },
       prev: () => { if (visible.length) player.play(visible[(idx - 1 + visible.length) % visible.length]); },
     };
   }, [stations, hidden, player.currentStation?.slug, player]);
@@ -93,7 +93,7 @@ export default function App() {
       title: nowPlaying?.name ?? player.currentStation.name,
       artist: nowPlaying?.artist ?? player.currentStation.name,
       album: '100FM Digital',
-      artwork: [{ src: player.currentStation.logo, sizes: '512x512', type: 'image/png' }],
+      artwork: [{ src: player.currentStation.cover ?? player.currentStation.logo, sizes: '512x512', type: 'image/png' }],
     });
   }, [player.currentStation, nowPlaying]);
 
