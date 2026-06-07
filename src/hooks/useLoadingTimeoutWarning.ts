@@ -7,12 +7,12 @@ export function useLoadingTimeoutWarning(isLoading: boolean) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (!isLoading) {
-      setVisible(false);
-      return;
-    }
+    if (!isLoading) return;
     const id = setTimeout(() => setVisible(true), WARNING_DELAY);
-    return () => clearTimeout(id);
+    return () => {
+      clearTimeout(id);
+      setVisible(false);
+    };
   }, [isLoading]);
 
   useEffect(() => {
