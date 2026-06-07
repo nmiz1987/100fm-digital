@@ -10,6 +10,7 @@ interface PlayerBarProps {
   volume: number;
   isFavorite: boolean;
   darkMode: boolean;
+  onExpand?: () => void;
   onPlayPause: () => void;
   onStop: () => void;
   onVolumeChange: (v: number) => void;
@@ -28,6 +29,7 @@ export function PlayerBar({
   volume,
   isFavorite,
   darkMode,
+  onExpand,
   onPlayPause,
   onStop,
   onVolumeChange,
@@ -49,7 +51,10 @@ export function PlayerBar({
       {/* Main row */}
       <div className="flex items-center gap-3 px-4 py-2 h-17.5 md:h-18">
         {/* Station info */}
-        <div className="flex items-center gap-3 min-w-0 flex-1">
+        <div
+          className={`flex items-center gap-3 min-w-0 flex-1 ${onExpand ? 'cursor-pointer' : ''}`}
+          onClick={onExpand}
+        >
           <img
             src={station.cover ?? station.logo}
             alt={station.name}

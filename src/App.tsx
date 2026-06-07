@@ -3,7 +3,9 @@ import { Header } from './components/Header';
 import { StationGrid } from './components/StationGrid';
 import { PlayerBar } from './components/PlayerBar';
 import { LoadingTimeoutToast } from './components/LoadingTimeoutToast';
+import { NowPlayingScreen } from './components/NowPlayingScreen';
 import { useStations } from './hooks/useStations';
+import { useMediaQuery } from './hooks/useMediaQuery';
 import { usePlayer } from './hooks/usePlayer';
 import { useNowPlaying } from './hooks/useNowPlaying';
 import { useSliderLabels } from './hooks/useSliderLabels';
@@ -20,6 +22,8 @@ export default function App() {
 
   const { stations, loading } = useStations();
   const player = usePlayer(volume);
+  const isMobile = useMediaQuery('(max-width: 1023px)');
+  const [showNowPlaying, setShowNowPlaying] = useState(false);
 
   const activeInfoUrl = player.currentSlider?.info ?? player.currentStation?.info;
   const nowPlaying = useNowPlaying(activeInfoUrl);
@@ -38,6 +42,11 @@ export default function App() {
     } else {
       player.play(station);
     }
+    if (isMobile) setShowNowPlaying(true);
+  };
+
+  const handleExpand = () => {
+    if (isMobile) setShowNowPlaying(true);
   };
 
   const handlePlayPause = () => {
@@ -104,6 +113,21 @@ export default function App() {
     });
   }, [player.currentStation, nowPlaying]);
 
+  // The Now Playing screen only ever exists on mobile/tablet with an active station —
+  // deriving visibility (rather than syncing it back via effects) keeps it correct even
+  // if playback stops or the viewport crosses the breakpoint.
+  const nowPlayingOpen = isMobile && !!player.currentStation && showNowPlaying;
+
+  // Lock body scroll while the Now Playing screen is open
+  useEffect(() => {
+    if (!nowPlayingOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [nowPlayingOpen]);
+
   if (darkMode) {
     document.documentElement.classList.add('dark');
   } else {
@@ -153,11 +177,32 @@ export default function App() {
           volume={player.volume}
           isFavorite={favorites.includes(player.currentStation.slug)}
           darkMode={darkMode}
+          onExpand={isMobile ? handleExpand : undefined}
           onPlayPause={handlePlayPause}
           onStop={player.stop}
           onVolumeChange={handleVolumeChange}
           onToggleFavorite={() => handleToggleFavorite(player.currentStation!.slug)}
           sliderLabels={sliderLabels}
+          onSelectLive={handleSelectLive}
+          onSelectSlider={handleSelectSlider}
+        />
+      )}
+
+      {isMobile && player.currentStation && (
+        <NowPlayingScreen
+          open={nowPlayingOpen}
+          station={player.currentStation}
+          currentSlider={player.currentSlider}
+          sliderLabels={sliderLabels}
+          nowPlaying={nowPlaying}
+          isPlaying={player.isPlaying}
+          isLoading={player.isLoading}
+          isFavorite={favorites.includes(player.currentStation.slug)}
+          darkMode={darkMode}
+          onClose={() => setShowNowPlaying(false)}
+          onPlayPause={handlePlayPause}
+          onToggleFavorite={() => handleToggleFavorite(player.currentStation!.slug)}
+          onDarkModeToggle={handleDarkModeToggle}
           onSelectLive={handleSelectLive}
           onSelectSlider={handleSelectSlider}
         />

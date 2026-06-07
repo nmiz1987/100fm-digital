@@ -231,4 +231,16 @@ describe('PlayerBar', () => {
     const liveTab = screen.getByRole('button', { name: 'Rock FM #1' })
     expect(liveTab.className).toContain('bg-[#e8192c]')
   })
+
+  it('calls onExpand when the station info row is clicked, if provided', () => {
+    const onExpand = vi.fn()
+    render(<PlayerBar {...defaultProps} onExpand={onExpand} />)
+    fireEvent.click(screen.getByText('Rock FM'))
+    expect(onExpand).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not error when the station info row is clicked without onExpand', () => {
+    render(<PlayerBar {...defaultProps} />)
+    expect(() => fireEvent.click(screen.getByText('Rock FM'))).not.toThrow()
+  })
 })
