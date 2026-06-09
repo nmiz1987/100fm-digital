@@ -11,10 +11,10 @@ export function useNowPlaying(infoUrl: string | undefined) {
     if (!infoUrl) return;
 
     let cancelled = false;
-    setNowPlaying(null);
 
-    async function fetch() {
+    async function fetch(reset = false) {
       if (!infoUrl) return;
+      if (reset && !cancelled) setNowPlaying(null);
       const data = await fetchNowPlayingJson(infoUrl);
 
       if (!cancelled && data) {
@@ -22,7 +22,7 @@ export function useNowPlaying(infoUrl: string | undefined) {
       }
     }
 
-    void fetch();
+    void fetch(true);
     const id = setInterval(() => void fetch(), POLL_INTERVAL);
     return () => {
       cancelled = true;
