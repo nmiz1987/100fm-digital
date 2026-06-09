@@ -19,7 +19,7 @@ export function SliderTabs({ station, currentSlider, sliderLabels, darkMode, onS
         onClick={onSelectLive}
         title={sliderLabels[0]}
         dir="ltr"
-        className={` truncate px-3 py-0.5 rounded-full text-xs font-medium transition-colors
+        className={`truncate px-3 py-0.5 rounded-full text-xs font-medium transition-colors
           ${!currentSlider ? 'bg-[#e8192c] text-white' : inactiveTab}`}
       >
         {sliderLabels[0] ?? `${station.name} #1`}
@@ -30,7 +30,7 @@ export function SliderTabs({ station, currentSlider, sliderLabels, darkMode, onS
           onClick={() => onSelectSlider(slider)}
           title={sliderLabels[i + 1]}
           dir="ltr"
-          className={` truncate px-3 py-0.5 rounded-full text-xs font-medium transition-colors
+          className={`truncate px-3 py-0.5 rounded-full text-xs font-medium transition-colors
             ${currentSlider?.audio === slider.audio ? 'bg-[#e8192c] text-white' : inactiveTab}`}
         >
           {sliderLabels[i + 1] ?? `${station.name} #${i + 2}`}
