@@ -1,8 +1,7 @@
-import { useState } from 'react';
-import type { Station } from '../types';
-import { StationCard } from './StationCard';
-
-type Tab = 'all' | 'favorites' | 'popular' | 'hidden';
+import type { Station } from '../../types';
+import { StationCard } from '../StationCard/StationCard';
+import { ListViewIcon, GridViewIcon } from '../common/icons';
+import { useStationGrid } from './useStationGrid';
 
 interface StationGridProps {
   stations: Station[];
@@ -30,39 +29,12 @@ export function StationGrid({
   onToggleFavorite,
   onToggleHide,
 }: StationGridProps) {
-  const [tab, setTab] = useState<Tab>('all');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>(() => (localStorage.getItem('viewMode') as 'grid' | 'list') ?? 'grid');
-
-  const setViewModePersisted = (mode: 'grid' | 'list') => {
-    localStorage.setItem('viewMode', mode);
-    setViewMode(mode);
-  };
-
-  const normalizedSearch = search.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-
-  const filtered = stations.filter((s) => {
-    if (tab === 'hidden') {
-      if (!hidden.includes(s.slug)) return false;
-    } else {
-      if (hidden.includes(s.slug)) return false;
-      if (tab === 'favorites') return favorites.includes(s.slug);
-      if (tab === 'popular') return s.popular === 'true';
-    }
-    if (search) {
-      const name = s.name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-      if (!name.includes(normalizedSearch)) return false;
-    }
-    return true;
+  const { tab, setTab, viewMode, setViewModePersisted, filtered, tabs } = useStationGrid({
+    stations,
+    search,
+    favorites,
+    hidden,
   });
-
-  const hiddenCount = stations.filter((s) => hidden.includes(s.slug)).length;
-
-  const tabs: { id: Tab; label: string }[] = [
-    { id: 'all', label: 'הכל' },
-    { id: 'favorites', label: `מועדפים${favorites.length ? ` (${favorites.length})` : ''}` },
-    { id: 'popular', label: 'פופולרי' },
-    ...(hiddenCount > 0 ? [{ id: 'hidden' as Tab, label: `מוסתרות (${hiddenCount})` }] : []),
-  ];
 
   return (
     <div className="flex-1 p-4 max-w-7xl mx-auto w-full">
@@ -88,43 +60,7 @@ export function StationGrid({
           onClick={() => setViewModePersisted(viewMode === 'grid' ? 'list' : 'grid')}
           title={viewMode === 'grid' ? 'תצוגת רשימה' : 'תצוגת רשת'}
         >
-          {viewMode === 'grid' ? (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="8" y1="6" x2="21" y2="6" />
-              <line x1="8" y1="12" x2="21" y2="12" />
-              <line x1="8" y1="18" x2="21" y2="18" />
-              <line x1="3" y1="6" x2="3.01" y2="6" />
-              <line x1="3" y1="12" x2="3.01" y2="12" />
-              <line x1="3" y1="18" x2="3.01" y2="18" />
-            </svg>
-          ) : (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <rect x="3" y="3" width="7" height="7" />
-              <rect x="14" y="3" width="7" height="7" />
-              <rect x="3" y="14" width="7" height="7" />
-              <rect x="14" y="14" width="7" height="7" />
-            </svg>
-          )}
+          {viewMode === 'grid' ? <ListViewIcon /> : <GridViewIcon />}
         </button>
       </div>
 

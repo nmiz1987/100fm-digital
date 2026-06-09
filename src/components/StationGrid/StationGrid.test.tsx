@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { StationGrid } from './StationGrid'
-import type { Station } from '../types'
+import type { Station } from '../../types'
 
 const makeStation = (slug: string, name: string, overrides: Partial<Station> = {}): Station => ({
   name,

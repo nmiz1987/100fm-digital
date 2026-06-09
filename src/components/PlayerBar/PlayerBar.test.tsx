@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { PlayerBar } from './PlayerBar'
-import type { Station, Slider } from '../types'
+import type { Station, Slider } from '../../types'
 
 const slider1: Slider = { audio: 'http://slider1' }
 const slider2: Slider = { audio: 'http://slider2' }
