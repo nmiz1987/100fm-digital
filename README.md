@@ -54,9 +54,17 @@ Open [http://localhost:5173](http://localhost:5173).
 
 ```
 src/
-  components/    # UI components (Header, PlayerBar, StationCard, StationGrid, LoadingTimeoutToast)
-  hooks/         # Custom hooks (usePlayer, useStations, useNowPlaying, useLocalStorage, useSliderLabels, useLoadingTimeoutWarning)
-  utils/         # Shared utilities (fetchNowPlayingJson, proxyUrl)
-  types/         # TypeScript type definitions
-  test/          # Test setup and globals
+  components/
+    Header/          # Search bar and dark mode toggle
+    PlayerBar/       # Now-playing bar with play/pause, volume, DVR slider tabs
+      SliderTabs/    # DVR timeshift tab navigation
+      VolumeSlider/  # Volume control
+    StationCard/     # Individual station card
+    StationGrid/     # Station grid with filtering and view toggle
+    common/          # Shared icons, LoadingTimeoutToast, StationsLoader
+  hooks/             # usePlayer, useStations, useNowPlaying, useLocalStorage,
+                     # useSliderLabels, useLoadingTimeoutWarning, useAppState
+  utils/             # proxyUrl
+  types/             # TypeScript type definitions
+  test/              # Test setup and globals
 ```
