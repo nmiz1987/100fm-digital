@@ -11,6 +11,7 @@ export function useNowPlaying(infoUrl: string | undefined) {
     if (!infoUrl) return;
 
     let cancelled = false;
+    setNowPlaying(null);
 
     async function fetch() {
       if (!infoUrl) return;
