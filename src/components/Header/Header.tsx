@@ -16,12 +16,6 @@ export function Header({ search, onSearchChange, darkMode, onDarkModeToggle }: H
       className={`sticky top-0 z-40 backdrop-blur border-b px-4 py-3 ${darkMode ? 'bg-[#0f0f0f]/95 border-white/5' : 'bg-white/95 border-gray-200 shadow-sm'}`}
     >
       <div className="max-w-7xl mx-auto flex items-center gap-3">
-        {/* Brand */}
-        <div className="flex items-center gap-2 shrink-0">
-          <img src="/icon.svg" alt="100FM" className="h-8 w-8 shrink-0 block" />
-          <span className={`font-bold text-lg hidden sm:block ${darkMode ? 'text-white' : 'text-gray-900'}`}>100FM Digital</span>
-        </div>
-
         {/* Search */}
         <div className="flex-1 relative">
           <input
