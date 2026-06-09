@@ -111,9 +111,9 @@ describe('PlayerBar', () => {
     expect(screen.getByText('שידור חי')).toBeInTheDocument()
   })
 
-  it('shows station #1 label in info when has sliders and no current slider', () => {
-    render(<PlayerBar {...defaultProps} station={stationWithSliders} sliderLabels={['S1', 'S2']} />)
-    const matches = screen.getAllByText('Rock FM #1')
+  it('shows live label from sliderLabels[0] in info when has sliders and no current slider', () => {
+    render(<PlayerBar {...defaultProps} station={stationWithSliders} sliderLabels={['Live Now', 'S1', 'S2']} />)
+    const matches = screen.getAllByText('Live Now')
     expect(matches.length).toBeGreaterThanOrEqual(1)
   })
 
@@ -123,7 +123,8 @@ describe('PlayerBar', () => {
   })
 
   it('shows slider label in info when currentSlider is active with label', () => {
-    render(<PlayerBar {...defaultProps} station={stationWithSliders} currentSlider={slider1} sliderLabels={['Pop Mix', 'Rock Mix']} />)
+    // sliderLabels[0]=live, sliderLabels[1]=slider1 label, sliderLabels[2]=slider2 label
+    render(<PlayerBar {...defaultProps} station={stationWithSliders} currentSlider={slider1} sliderLabels={['Live Now', 'Pop Mix', 'Rock Mix']} />)
     // Label appears in both the info <p> and the active tab button
     expect(screen.getAllByText('Pop Mix').length).toBeGreaterThanOrEqual(1)
   })
@@ -135,22 +136,24 @@ describe('PlayerBar', () => {
   })
 
   it('shows slider tab row when station has sliders', () => {
-    render(<PlayerBar {...defaultProps} station={stationWithSliders} sliderLabels={['S1', 'S2']} />)
-    expect(screen.getByRole('button', { name: 'Rock FM #1' })).toBeInTheDocument()
+    // sliderLabels[0]=live label, [1]=slider1 label, [2]=slider2 label
+    render(<PlayerBar {...defaultProps} station={stationWithSliders} sliderLabels={['Live Now', 'S1', 'S2']} />)
+    expect(screen.getByRole('button', { name: 'Live Now' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'S1' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'S2' })).toBeInTheDocument()
   })
 
   it('calls onSelectLive when live tab clicked', () => {
     const onSelectLive = vi.fn()
-    render(<PlayerBar {...defaultProps} station={stationWithSliders} sliderLabels={['S1', 'S2']} onSelectLive={onSelectLive} />)
-    fireEvent.click(screen.getByRole('button', { name: 'Rock FM #1' }))
+    render(<PlayerBar {...defaultProps} station={stationWithSliders} sliderLabels={['Live Now', 'S1', 'S2']} onSelectLive={onSelectLive} />)
+    fireEvent.click(screen.getByRole('button', { name: 'Live Now' }))
     expect(onSelectLive).toHaveBeenCalledTimes(1)
   })
 
   it('calls onSelectSlider with correct slider when tab clicked', () => {
     const onSelectSlider = vi.fn()
-    render(<PlayerBar {...defaultProps} station={stationWithSliders} sliderLabels={['S1', 'S2']} onSelectSlider={onSelectSlider} />)
+    // sliderLabels[0]=live, [1]=slider1, [2]=slider2
+    render(<PlayerBar {...defaultProps} station={stationWithSliders} sliderLabels={['Live Now', 'S1', 'S2']} onSelectSlider={onSelectSlider} />)
     fireEvent.click(screen.getByRole('button', { name: 'S1' }))
     expect(onSelectSlider).toHaveBeenCalledWith(slider1)
   })
@@ -214,12 +217,13 @@ describe('PlayerBar', () => {
   })
 
   it('marks active slider tab when currentSlider matches', () => {
+    // sliderLabels[0]=live, [1]=slider1, [2]=slider2
     render(
       <PlayerBar
         {...defaultProps}
         station={stationWithSliders}
         currentSlider={slider1}
-        sliderLabels={['S1', 'S2']}
+        sliderLabels={['Live Now', 'S1', 'S2']}
       />
     )
     const activeTab = screen.getByRole('button', { name: 'S1' })
@@ -227,8 +231,8 @@ describe('PlayerBar', () => {
   })
 
   it('marks live tab active when no currentSlider', () => {
-    render(<PlayerBar {...defaultProps} station={stationWithSliders} sliderLabels={['S1', 'S2']} currentSlider={null} />)
-    const liveTab = screen.getByRole('button', { name: 'Rock FM #1' })
+    render(<PlayerBar {...defaultProps} station={stationWithSliders} sliderLabels={['Live Now', 'S1', 'S2']} currentSlider={null} />)
+    const liveTab = screen.getByRole('button', { name: 'Live Now' })
     expect(liveTab.className).toContain('bg-[#e8192c]')
   })
 })

@@ -66,9 +66,9 @@ export function PlayerBar({
             ) : (
               <p className={`text-xs ${darkMode ? 'text-white/30' : 'text-gray-400'}`}>
                 {currentSlider
-                  ? (sliderLabels[currentSliderIndex] ?? 'שידור מושהה')
+                  ? (sliderLabels[currentSliderIndex + 1] ?? 'שידור מושהה')
                   : hasSliders
-                    ? `${station.name} #1`
+                    ? (sliderLabels[0] ?? `${station.name} #1`)
                     : 'שידור חי'}
               </p>
             )}

@@ -32,11 +32,7 @@ export default function App() {
     <div className={`min-h-screen flex flex-col ${darkMode ? 'bg-[#0f0f0f] text-white' : 'bg-gray-50 text-gray-900'}`}>
       <Header search={search} onSearchChange={setSearch} darkMode={darkMode} onDarkModeToggle={handleDarkModeToggle} />
 
-      <LoadingTimeoutToast
-        visible={loadingTimeoutWarning.visible}
-        darkMode={darkMode}
-        onDismiss={loadingTimeoutWarning.dismiss}
-      />
+      <LoadingTimeoutToast visible={loadingTimeoutWarning.visible} darkMode={darkMode} onDismiss={loadingTimeoutWarning.dismiss} />
 
       <main className={`flex-1 flex flex-col ${player.currentStation ? 'pb-35' : ''}`}>
         {loading ? (

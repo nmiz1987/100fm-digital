@@ -19,7 +19,7 @@ export function useAppState() {
 
   const activeInfoUrl = player.currentSlider?.info ?? player.currentStation?.info;
   const nowPlaying = useNowPlaying(activeInfoUrl);
-  const sliderLabels = useSliderLabels(player.currentStation?.sliders, player.currentStation?.name ?? '');
+  const sliderLabels = useSliderLabels(player.currentStation ?? undefined);
   const loadingTimeoutWarning = useLoadingTimeoutWarning(player.isLoading);
 
   const handleVolumeChange = (v: number) => {
