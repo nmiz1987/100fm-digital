@@ -11,6 +11,8 @@ export default function App() {
     darkMode,
     search,
     setSearch,
+    tab,
+    setTab,
     stations,
     loading,
     player,
@@ -53,6 +55,8 @@ export default function App() {
             favorites={favorites}
             hidden={hidden}
             darkMode={darkMode}
+            tab={tab}
+            setTab={setTab}
             onPlay={handlePlay}
             onToggleFavorite={handleToggleFavorite}
             onToggleHide={handleToggleHide}

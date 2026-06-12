@@ -1,4 +1,5 @@
 import type { Station } from '../../types';
+import type { Tab } from '../../utils/filterStations';
 import { StationCard } from '../StationCard/StationCard';
 import { ListViewIcon, GridViewIcon } from '../common/icons';
 import { useStationGrid } from './useStationGrid';
@@ -12,6 +13,8 @@ interface StationGridProps {
   favorites: string[];
   hidden: string[];
   darkMode: boolean;
+  tab: Tab;
+  setTab: (tab: Tab) => void;
   onPlay: (station: Station) => void;
   onToggleFavorite: (slug: string) => void;
   onToggleHide: (slug: string) => void;
@@ -25,15 +28,19 @@ export function StationGrid({
   favorites,
   hidden,
   darkMode,
+  tab,
+  setTab,
   onPlay,
   onToggleFavorite,
   onToggleHide,
 }: StationGridProps) {
-  const { tab, setTab, viewMode, setViewModePersisted, filtered, tabs } = useStationGrid({
+  const { viewMode, setViewModePersisted, filtered, tabs } = useStationGrid({
     stations,
     search,
     favorites,
     hidden,
+    tab,
+    setTab,
   });
 
   return (

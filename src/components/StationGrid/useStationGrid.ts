@@ -1,17 +1,19 @@
 import { useState } from 'react';
 import type { Station } from '../../types';
+import { filterStations, type Tab } from '../../utils/filterStations';
 
-export type Tab = 'all' | 'favorites' | 'popular' | 'hidden';
+export type { Tab };
 
 interface UseStationGridParams {
   stations: Station[];
   search: string;
   favorites: string[];
   hidden: string[];
+  tab: Tab;
+  setTab: (tab: Tab) => void;
 }
 
-export function useStationGrid({ stations, search, favorites, hidden }: UseStationGridParams) {
-  const [tab, setTab] = useState<Tab>('all');
+export function useStationGrid({ stations, search, favorites, hidden, tab, setTab }: UseStationGridParams) {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>(
     () => (localStorage.getItem('viewMode') as 'grid' | 'list') ?? 'grid',
   );
@@ -21,22 +23,7 @@ export function useStationGrid({ stations, search, favorites, hidden }: UseStati
     setViewMode(mode);
   };
 
-  const normalizedSearch = search.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-
-  const filtered = stations.filter((s) => {
-    if (tab === 'hidden') {
-      if (!hidden.includes(s.slug)) return false;
-    } else {
-      if (hidden.includes(s.slug)) return false;
-      if (tab === 'favorites') return favorites.includes(s.slug);
-      if (tab === 'popular') return s.popular === 'true';
-    }
-    if (search) {
-      const name = s.name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-      if (!name.includes(normalizedSearch)) return false;
-    }
-    return true;
-  });
+  const filtered = filterStations(stations, { tab, search, favorites, hidden });
 
   const hiddenCount = stations.filter((s) => hidden.includes(s.slug)).length;
 

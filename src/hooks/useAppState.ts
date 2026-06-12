@@ -5,6 +5,7 @@ import { useNowPlaying } from './useNowPlaying';
 import { useSliderLabels } from './useSliderLabels';
 import { useLocalStorage } from './useLocalStorage';
 import { useLoadingTimeoutWarning } from './useLoadingTimeoutWarning';
+import { filterStations, type Tab } from '../utils/filterStations';
 import type { Slider, Station } from '../types';
 
 export function useAppState() {
@@ -13,6 +14,7 @@ export function useAppState() {
   const [hidden, setHidden] = useLocalStorage<string[]>('100fm_hidden', []);
   const [volume, setVolumeStorage] = useLocalStorage('100fm_volume', 0.8);
   const [search, setSearch] = useState('');
+  const [tab, setTab] = useState<Tab>('all');
 
   const { stations, loading } = useStations();
   const player = usePlayer(volume);
@@ -66,17 +68,17 @@ export function useAppState() {
   const navigateRef = useRef<{ next: () => void; prev: () => void }>({ next: () => {}, prev: () => {} });
 
   useEffect(() => {
-    const visible = stations.filter((s) => !hidden.includes(s.slug));
-    const idx = visible.findIndex((s) => s.slug === player.currentStation?.slug);
+    const list = filterStations(stations, { tab, search, favorites, hidden });
+    const idx = list.findIndex((s) => s.slug === player.currentStation?.slug);
     navigateRef.current = {
       next: () => {
-        if (visible.length) player.play(visible[(idx + 1) % visible.length]);
+        if (list.length) player.play(list[(idx + 1) % list.length]);
       },
       prev: () => {
-        if (visible.length) player.play(visible[(idx - 1 + visible.length) % visible.length]);
+        if (list.length) player.play(list[(idx - 1 + list.length) % list.length]);
       },
     };
-  }, [stations, hidden, player.currentStation?.slug, player]);
+  }, [stations, tab, search, favorites, hidden, player.currentStation?.slug, player]);
 
   useEffect(() => {
     if (!('mediaSession' in navigator)) return;
@@ -109,6 +111,8 @@ export function useAppState() {
     darkMode,
     search,
     setSearch,
+    tab,
+    setTab,
     stations,
     loading,
     player,
