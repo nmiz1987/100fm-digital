@@ -21,7 +21,15 @@ CI runs `typecheck → lint → test → build` in that order.
 
 ## Architecture
 
-All application state lives in `App.tsx` — there are no React contexts or providers. Each concern is handled by a dedicated hook, and `App` wires them together.
+All application state lives in `App.tsx` — there are no custom React contexts or providers. Each concern is handled by a dedicated hook, and `App` wires them together. The one exception is `react-router-dom`'s `<BrowserRouter>`, wrapped around `<App />` in `main.tsx`.
+
+**Routing**
+`App.tsx` renders a single `<Routes>`:
+- `/` → the main app (station grid + player bar)
+- `/car` and `/car/:slug` → `CarApp` (Car Mode, station list / station detail)
+- `*` → `NotFound` (404)
+
+`CarApp` reads the optional `:slug` param via `useParams` and navigates via `useNavigate`.
 
 **Audio engine — `usePlayer`**
 Manages a single `HTMLAudioElement` and an `hls.js` instance via refs (not React state). Playback strategy per station:

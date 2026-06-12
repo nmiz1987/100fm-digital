@@ -1,3 +1,4 @@
+import { useNavigate, useParams } from 'react-router-dom';
 import type { Station, Slider, NowPlaying } from '../../types';
 import type { Tab } from '../../utils/filterStations';
 import type { usePlayer } from '../../hooks/usePlayer';
@@ -7,8 +8,6 @@ import { CarStationList } from './CarStationList/CarStationList';
 import { CarStationInfo } from './CarStationInfo/CarStationInfo';
 
 interface CarAppProps {
-  pathname: string;
-  navigate: (path: string) => void;
   darkMode: boolean;
   stations: Station[];
   loading: boolean;
@@ -27,8 +26,6 @@ interface CarAppProps {
 }
 
 export function CarApp({
-  pathname,
-  navigate,
   darkMode,
   stations,
   loading,
@@ -45,8 +42,8 @@ export function CarApp({
   handleSelectLive,
   handleToggleFavorite,
 }: CarAppProps) {
-  const slugMatch = pathname.match(/^\/car\/(.+?)\/?$/);
-  const slug = slugMatch?.[1];
+  const navigate = useNavigate();
+  const { slug } = useParams<{ slug?: string }>();
 
   const filtered = filterStations(stations, { tab, search, favorites, hidden });
   const station = slug ? stations.find((s) => s.slug === slug) ?? null : null;
