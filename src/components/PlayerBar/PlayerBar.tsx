@@ -41,7 +41,7 @@ export const PlayerBar = forwardRef<HTMLDivElement, PlayerBarProps>(function Pla
     onSelectLive,
     onSelectSlider,
   },
-  ref
+  ref,
 ) {
   const { hasSliders, trackLine, currentSliderIndex } = usePlayerBar({ station, currentSlider, nowPlaying });
 
@@ -65,11 +65,11 @@ export const PlayerBar = forwardRef<HTMLDivElement, PlayerBarProps>(function Pla
           <div className="min-w-0">
             <p className={`text-sm font-semibold truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>{station.name}</p>
             {isLoading ? (
-              <p className={`text-xs animate-pulse ${darkMode ? 'text-white/40' : 'text-gray-400'}`}>טוען...</p>
+              <p className={`text-sm animate-pulse ${darkMode ? 'text-white/40' : 'text-gray-400'}`}>טוען...</p>
             ) : trackLine ? (
-              <p className={`text-xs truncate ${darkMode ? 'text-white/50' : 'text-gray-500'}`}>{trackLine}</p>
+              <p className={`text-sm truncate ${darkMode ? 'text-white/50' : 'text-gray-500'}`}>{trackLine}</p>
             ) : (
-              <p className={`text-xs ${darkMode ? 'text-white/30' : 'text-gray-400'}`}>
+              <p className={`text-sm ${darkMode ? 'text-white/30' : 'text-gray-400'}`}>
                 {currentSlider
                   ? (sliderLabels[currentSliderIndex + 1] ?? 'שידור מושהה')
                   : hasSliders
