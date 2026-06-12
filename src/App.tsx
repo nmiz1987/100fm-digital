@@ -1,4 +1,5 @@
 import { useAppState } from './hooks/useAppState';
+import { useElementHeight } from './hooks/useElementHeight';
 import { Header } from './components/Header/Header';
 import { StationGrid } from './components/StationGrid/StationGrid';
 import { PlayerBar } from './components/PlayerBar/PlayerBar';
@@ -28,13 +29,18 @@ export default function App() {
     handleDarkModeToggle,
   } = useAppState();
 
+  const [playerBarRef, playerBarHeight] = useElementHeight<HTMLDivElement>();
+
   return (
     <div className={`min-h-screen flex flex-col ${darkMode ? 'bg-[#0f0f0f] text-white' : 'bg-gray-50 text-gray-900'}`}>
       <Header search={search} onSearchChange={setSearch} darkMode={darkMode} onDarkModeToggle={handleDarkModeToggle} />
 
       <LoadingTimeoutToast visible={loadingTimeoutWarning.visible} darkMode={darkMode} onDismiss={loadingTimeoutWarning.dismiss} />
 
-      <main className={`flex-1 flex flex-col ${player.currentStation ? 'pb-35' : ''}`}>
+      <main
+        className="flex-1 flex flex-col"
+        style={player.currentStation ? { paddingBottom: playerBarHeight } : undefined}
+      >
         {loading ? (
           <StationsLoader darkMode={darkMode} />
         ) : (
@@ -56,6 +62,7 @@ export default function App() {
 
       {player.currentStation && (
         <PlayerBar
+          ref={playerBarRef}
           station={player.currentStation}
           currentSlider={player.currentSlider}
           nowPlaying={nowPlaying}

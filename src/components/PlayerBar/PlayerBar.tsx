@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import type { Station, Slider, NowPlaying } from '../../types';
 import { PauseIcon, PlayIcon } from '../common/icons';
 import { VolumeSlider } from './VolumeSlider/VolumeSlider';
@@ -22,27 +23,31 @@ interface PlayerBarProps {
   onSelectSlider: (slider: Slider) => void;
 }
 
-export function PlayerBar({
-  station,
-  currentSlider,
-  sliderLabels,
-  nowPlaying,
-  isPlaying,
-  isLoading,
-  volume,
-  isFavorite,
-  darkMode,
-  onPlayPause,
-  onStop,
-  onVolumeChange,
-  onToggleFavorite,
-  onSelectLive,
-  onSelectSlider,
-}: PlayerBarProps) {
+export const PlayerBar = forwardRef<HTMLDivElement, PlayerBarProps>(function PlayerBar(
+  {
+    station,
+    currentSlider,
+    sliderLabels,
+    nowPlaying,
+    isPlaying,
+    isLoading,
+    volume,
+    isFavorite,
+    darkMode,
+    onPlayPause,
+    onStop,
+    onVolumeChange,
+    onToggleFavorite,
+    onSelectLive,
+    onSelectSlider,
+  },
+  ref
+) {
   const { hasSliders, trackLine, currentSliderIndex } = usePlayerBar({ station, currentSlider, nowPlaying });
 
   return (
     <div
+      ref={ref}
       className={`fixed bottom-0 left-0 right-0 z-50 backdrop-blur border-t flex flex-col ${hasSliders ? 'pb-1' : ''} ${darkMode ? 'bg-[#111111]/98 border-white/8' : 'bg-white/98 border-gray-200 shadow-[0_-1px_8px_rgba(0,0,0,0.08)]'}`}
     >
       {/* Main row */}
@@ -126,4 +131,4 @@ export function PlayerBar({
       )}
     </div>
   );
-}
+});
