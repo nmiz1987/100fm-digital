@@ -1,14 +1,15 @@
 import { useHeader } from './useHeader';
-import { SunIcon, MoonIcon } from '../common/icons';
+import { SunIcon, MoonIcon, CarIcon } from '../common/icons';
 
 interface HeaderProps {
   search: string;
   onSearchChange: (v: string) => void;
   darkMode: boolean;
   onDarkModeToggle: () => void;
+  onCarModeEnter: () => void;
 }
 
-export function Header({ search, onSearchChange, darkMode, onDarkModeToggle }: HeaderProps) {
+export function Header({ search, onSearchChange, darkMode, onDarkModeToggle, onCarModeEnter }: HeaderProps) {
   const { inputRef } = useHeader(onSearchChange);
 
   return (
@@ -41,6 +42,16 @@ export function Header({ search, onSearchChange, darkMode, onDarkModeToggle }: H
             </button>
           )}
         </div>
+
+        {/* Car mode entry — small screens only */}
+        <button
+          onClick={onCarModeEnter}
+          className={`shrink-0 p-2 rounded-lg transition-colors sm:hidden ${darkMode ? 'text-white/60 hover:text-white hover:bg-white/8' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}`}
+          aria-label="מצב רכב"
+          title="מצב רכב"
+        >
+          <CarIcon />
+        </button>
 
         {/* Dark mode toggle */}
         <button

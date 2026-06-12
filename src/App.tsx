@@ -1,10 +1,12 @@
 import { useAppState } from './hooks/useAppState';
 import { useElementHeight } from './hooks/useElementHeight';
+import { useRoute } from './hooks/useRoute';
 import { Header } from './components/Header/Header';
 import { StationGrid } from './components/StationGrid/StationGrid';
 import { PlayerBar } from './components/PlayerBar/PlayerBar';
 import { LoadingTimeoutToast } from './components/common/LoadingTimeoutToast';
 import { StationsLoader } from './components/common/StationsLoader';
+import { CarApp } from './components/CarView/CarApp';
 
 export default function App() {
   const {
@@ -31,11 +33,36 @@ export default function App() {
     handleDarkModeToggle,
   } = useAppState();
 
+  const { pathname, navigate } = useRoute();
   const [playerBarRef, playerBarHeight] = useElementHeight<HTMLDivElement>();
+
+  if (pathname.startsWith('/car')) {
+    return (
+      <CarApp
+        pathname={pathname}
+        navigate={navigate}
+        darkMode={darkMode}
+        stations={stations}
+        loading={loading}
+        tab={tab}
+        search={search}
+        favorites={favorites}
+        hidden={hidden}
+        player={player}
+        nowPlaying={nowPlaying}
+        sliderLabels={sliderLabels}
+        handlePlay={handlePlay}
+        handlePlayPause={handlePlayPause}
+        handleSelectSlider={handleSelectSlider}
+        handleSelectLive={handleSelectLive}
+        handleToggleFavorite={handleToggleFavorite}
+      />
+    );
+  }
 
   return (
     <div className={`min-h-screen flex flex-col ${darkMode ? 'bg-[#0f0f0f] text-white' : 'bg-gray-50 text-gray-900'}`}>
-      <Header search={search} onSearchChange={setSearch} darkMode={darkMode} onDarkModeToggle={handleDarkModeToggle} />
+      <Header search={search} onSearchChange={setSearch} darkMode={darkMode} onDarkModeToggle={handleDarkModeToggle} onCarModeEnter={() => navigate('/car')} />
 
       <LoadingTimeoutToast visible={loadingTimeoutWarning.visible} darkMode={darkMode} onDismiss={loadingTimeoutWarning.dismiss} />
 

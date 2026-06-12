@@ -30,4 +30,8 @@
   .scrollbar-none::-webkit-scrollbar {
     display: none;
   }
+
+  .car-mode {
+    font-size: 1.0625rem;
+  }
 }
