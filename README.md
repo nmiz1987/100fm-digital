@@ -61,10 +61,15 @@ src/
       VolumeSlider/  # Volume control
     StationCard/     # Individual station card
     StationGrid/     # Station grid with filtering and view toggle
-    common/          # Shared icons, LoadingTimeoutToast, StationsLoader
+    CarView/         # Car Mode UI (/car routes)
+    common/          # Shared icons, LoadingTimeoutToast, StationsLoader, NotFound
   hooks/             # usePlayer, useStations, useNowPlaying, useLocalStorage,
                      # useSliderLabels, useLoadingTimeoutWarning, useAppState
-  utils/             # proxyUrl
+  utils/             # proxyUrl, filterStations
   types/             # TypeScript type definitions
   test/              # Test setup and globals
 ```
+
+## License
+
+[MIT](LICENSE)

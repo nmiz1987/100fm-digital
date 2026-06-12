@@ -7,6 +7,7 @@ const defaultProps = {
   onSearchChange: vi.fn(),
   darkMode: true,
   onDarkModeToggle: vi.fn(),
+  onCarModeEnter: vi.fn(),
 }
 
 describe('Header', () => {
@@ -68,5 +69,19 @@ describe('Header', () => {
     render(<Header {...defaultProps} onDarkModeToggle={onDarkModeToggle} />)
     fireEvent.click(screen.getByLabelText('מצב בהיר'))
     expect(onDarkModeToggle).toHaveBeenCalledTimes(1)
+  })
+
+  it('renders a car mode button that is hidden on larger screens', () => {
+    render(<Header {...defaultProps} />)
+    const carButton = screen.getByLabelText('מצב רכב')
+    expect(carButton).toBeInTheDocument()
+    expect(carButton.className).toContain('sm:hidden')
+  })
+
+  it('calls onCarModeEnter when the car mode button is clicked', () => {
+    const onCarModeEnter = vi.fn()
+    render(<Header {...defaultProps} onCarModeEnter={onCarModeEnter} />)
+    fireEvent.click(screen.getByLabelText('מצב רכב'))
+    expect(onCarModeEnter).toHaveBeenCalledTimes(1)
   })
 })

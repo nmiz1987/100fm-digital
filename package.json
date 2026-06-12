@@ -3,6 +3,13 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "description": "A Hebrew-language radio player for 100FM Digital — live playback, now-playing info, favorites, and DVR timeshift.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nmiz1987/100fm-digital.git"
+  },
+  "homepage": "https://digital.100fm.co.il/app/",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -16,7 +23,8 @@
   "dependencies": {
     "hls.js": "^1.5.13",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.17.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

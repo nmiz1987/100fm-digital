@@ -113,3 +113,52 @@ export function MoonIcon({ size = 18 }: IconProps) {
     </svg>
   );
 }
+
+export function CarIcon({ size = 18 }: IconProps) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 13l1.5-4.5A2 2 0 0 1 6.4 7h11.2a2 2 0 0 1 1.9 1.5L21 13" />
+      <path d="M3 13h18v4a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1H6v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-4z" />
+      <circle cx="7.5" cy="17.5" r="0.5" fill="currentColor" />
+      <circle cx="16.5" cy="17.5" r="0.5" fill="currentColor" />
+    </svg>
+  );
+}
+
+export function SkipBackIcon({ size = 18 }: IconProps) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+      <rect x="2" y="5" width="2" height="14" />
+      <path d="M12 5v14l-8-7z" />
+      <path d="M20 5v14l-8-7z" />
+    </svg>
+  );
+}
+
+export function SkipForwardIcon({ size = 18 }: IconProps) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M4 5v14l8-7z" />
+      <path d="M12 5v14l8-7z" />
+      <rect x="20" y="5" width="2" height="14" />
+    </svg>
+  );
+}
+
+export function BackIcon({ size = 18 }: IconProps) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12" />
+      <polyline points="12 5 5 12 12 19" />
+    </svg>
+  );
+}
+
+export function ExitIcon({ size = 18 }: IconProps) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  );
+}
