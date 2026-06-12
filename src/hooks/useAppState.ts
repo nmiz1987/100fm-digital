@@ -95,7 +95,7 @@ export function useAppState() {
     navigator.mediaSession.metadata = new MediaMetadata({
       title: nowPlaying?.name ?? player.currentStation.name,
       artist: nowPlaying?.artist ?? player.currentStation.name,
-      album: '100FM Digital',
+      album: player.currentStation?.name ?? '100FM Digital',
       artwork: [{ src: player.currentStation.cover ?? player.currentStation.logo, sizes: '512x512', type: 'image/png' }],
     });
   }, [player.currentStation, nowPlaying]);

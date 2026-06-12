@@ -31,3 +31,6 @@ pnpm-debug.log*
 *.tsbuildinfo
 
 coverage/
+
+# Claude Code local settings
+.claude/settings.local.json
