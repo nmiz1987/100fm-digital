@@ -1,10 +1,8 @@
-import { describe, it, expect, vi } from 'vitest'
-import { useState } from 'react'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { StationGrid } from './StationGrid'
 import type { Station } from '../../types'
-import type { Tab } from '../../utils/filterStations'
-import type { ComponentProps } from 'react'
+import { useStore } from '../../store/store'
 
 const makeStation = (slug: string, name: string, overrides: Partial<Station> = {}): Station => ({
   name,
@@ -21,30 +19,23 @@ const stations: Station[] = [
   makeStation('classical', 'Classical Radio'),
 ]
 
-const defaultProps = {
-  stations,
-  loading: false,
-  search: '',
-  activeSlug: null,
-  isPlaying: false,
-  favorites: [],
-  hidden: [],
-  darkMode: true,
-  onPlay: vi.fn(),
-  onToggleFavorite: vi.fn(),
-  onToggleHide: vi.fn(),
-}
-
-// StationGrid no longer owns tab state (it lives in useAppState); this harness
-// supplies controlled tab state so tests can click tabs and see them change.
-function StationGridHarness(props: Omit<ComponentProps<typeof StationGrid>, 'tab' | 'setTab'>) {
-  const [tab, setTab] = useState<Tab>('all')
-  return <StationGrid {...props} tab={tab} setTab={setTab} />
-}
+beforeEach(() => {
+  useStore.setState({
+    isDarkMode: true,
+    stations,
+    tab: 'all',
+    search: '',
+    viewMode: 'grid',
+    favorites: [],
+    hidden: [],
+    currentStation: null,
+    isPlaying: false,
+  })
+})
 
 describe('StationGrid', () => {
   it('renders all stations on the "הכל" tab', () => {
-    render(<StationGridHarness {...defaultProps} />)
+    render(<StationGrid />)
     expect(screen.getByText('Rock FM')).toBeInTheDocument()
     expect(screen.getByText('Jazz Club')).toBeInTheDocument()
     expect(screen.getByText('Pop Hits')).toBeInTheDocument()
@@ -52,7 +43,7 @@ describe('StationGrid', () => {
   })
 
   it('shows only popular stations on the "פופולרי" tab', () => {
-    render(<StationGridHarness {...defaultProps} />)
+    render(<StationGrid />)
     fireEvent.click(screen.getByRole('button', { name: 'פופולרי' }))
     expect(screen.getByText('Rock FM')).toBeInTheDocument()
     expect(screen.getByText('Pop Hits')).toBeInTheDocument()
@@ -61,75 +52,86 @@ describe('StationGrid', () => {
   })
 
   it('shows only favorites on the "מועדפים" tab', () => {
-    render(<StationGridHarness {...defaultProps} favorites={['jazz-club']} />)
+    useStore.setState({ favorites: ['jazz-club'] })
+    render(<StationGrid />)
     fireEvent.click(screen.getByText('מועדפים (1)'))
     expect(screen.getByText('Jazz Club')).toBeInTheDocument()
     expect(screen.queryByText('Rock FM')).not.toBeInTheDocument()
   })
 
   it('shows favorites count in tab label', () => {
-    render(<StationGridHarness {...defaultProps} favorites={['rock-fm', 'jazz-club']} />)
+    useStore.setState({ favorites: ['rock-fm', 'jazz-club'] })
+    render(<StationGrid />)
     expect(screen.getByText('מועדפים (2)')).toBeInTheDocument()
   })
 
   it('filters stations by search query', () => {
-    render(<StationGridHarness {...defaultProps} search="rock" />)
+    useStore.setState({ search: 'rock' })
+    render(<StationGrid />)
     expect(screen.getByText('Rock FM')).toBeInTheDocument()
     expect(screen.queryByText('Jazz Club')).not.toBeInTheDocument()
   })
 
   it('shows empty state when no stations match search', () => {
-    render(<StationGridHarness {...defaultProps} search="zzznomatch" />)
+    useStore.setState({ search: 'zzznomatch' })
+    render(<StationGrid />)
     expect(screen.getByText('לא נמצאו תחנות')).toBeInTheDocument()
   })
 
   it('hides hidden stations by default', () => {
-    render(<StationGridHarness {...defaultProps} hidden={['jazz-club']} />)
+    useStore.setState({ hidden: ['jazz-club'] })
+    render(<StationGrid />)
     expect(screen.queryByText('Jazz Club')).not.toBeInTheDocument()
   })
 
   it('shows מוסתרות tab when there are hidden stations', () => {
-    render(<StationGridHarness {...defaultProps} hidden={['jazz-club']} />)
+    useStore.setState({ hidden: ['jazz-club'] })
+    render(<StationGrid />)
     expect(screen.getByRole('button', { name: 'מוסתרות (1)' })).toBeInTheDocument()
   })
 
   it('does not show מוסתרות tab when no stations are hidden', () => {
-    render(<StationGridHarness {...defaultProps} hidden={[]} />)
+    render(<StationGrid />)
     expect(screen.queryByRole('button', { name: /מוסתרות/ })).not.toBeInTheDocument()
   })
 
   it('shows only hidden stations on the מוסתרות tab', () => {
-    render(<StationGridHarness {...defaultProps} hidden={['jazz-club']} />)
+    useStore.setState({ hidden: ['jazz-club'] })
+    render(<StationGrid />)
     fireEvent.click(screen.getByRole('button', { name: 'מוסתרות (1)' }))
     expect(screen.getByText('Jazz Club')).toBeInTheDocument()
     expect(screen.queryByText('Rock FM')).not.toBeInTheDocument()
   })
 
-  it('calls onPlay when a station card is clicked', () => {
-    const onPlay = vi.fn()
-    render(<StationGridHarness {...defaultProps} onPlay={onPlay} />)
+  it('plays a station when its card is clicked', () => {
+    render(<StationGrid />)
     fireEvent.click(screen.getByText('Rock FM'))
-    expect(onPlay).toHaveBeenCalledWith(stations[0])
+    expect(useStore.getState().currentStation).toEqual(stations[0])
   })
 
-  it('calls onToggleFavorite with station slug when heart clicked', () => {
-    const onToggleFavorite = vi.fn()
-    render(<StationGridHarness {...defaultProps} onToggleFavorite={onToggleFavorite} />)
+  it('toggles favorite when heart is clicked', () => {
+    render(<StationGrid />)
     fireEvent.click(screen.getAllByTitle('הוסף למועדפים')[0])
-    expect(onToggleFavorite).toHaveBeenCalledWith(stations[0].slug)
+    expect(useStore.getState().favorites).toEqual([stations[0].slug])
   })
 
-  it('calls onToggleHide with station slug when hide clicked', () => {
-    const onToggleHide = vi.fn()
-    render(<StationGridHarness {...defaultProps} onToggleHide={onToggleHide} />)
+  it('toggles hidden when hide button is clicked', () => {
+    render(<StationGrid />)
     fireEvent.click(screen.getAllByTitle('הסתר תחנה')[0])
-    expect(onToggleHide).toHaveBeenCalledWith(stations[0].slug)
+    expect(useStore.getState().hidden).toEqual([stations[0].slug])
   })
 
   it('shows active tab indicator on selected tab', () => {
-    render(<StationGridHarness {...defaultProps} />)
+    render(<StationGrid />)
     fireEvent.click(screen.getByRole('button', { name: 'פופולרי' }))
     const popularBtn = screen.getByRole('button', { name: 'פופולרי' })
     expect(popularBtn.querySelector('span')).toBeInTheDocument()
+  })
+
+  it('toggles between grid and list view modes', () => {
+    render(<StationGrid />)
+    expect(useStore.getState().viewMode).toBe('grid')
+    fireEvent.click(screen.getByTitle('תצוגת רשימה'))
+    expect(useStore.getState().viewMode).toBe('list')
   })
 })

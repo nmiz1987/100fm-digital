@@ -1,78 +1,78 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { Header } from './Header'
+import { useStore } from '../../store/store'
 
-const defaultProps = {
-  search: '',
-  onSearchChange: vi.fn(),
-  darkMode: true,
-  onDarkModeToggle: vi.fn(),
-  onCarModeEnter: vi.fn(),
-}
+beforeEach(() => {
+  useStore.setState({ search: '', isDarkMode: true })
+})
 
 describe('Header', () => {
   it('renders the search input', () => {
-    render(<Header {...defaultProps} />)
+    render(<Header onCarModeEnter={vi.fn()} />)
     expect(screen.getByPlaceholderText('חיפוש תחנה...')).toBeInTheDocument()
   })
 
   it('shows current search value in the input', () => {
-    render(<Header {...defaultProps} search="rock" />)
+    useStore.setState({ search: 'rock' })
+    render(<Header onCarModeEnter={vi.fn()} />)
     expect(screen.getByDisplayValue('rock')).toBeInTheDocument()
   })
 
-  it('calls onSearchChange when user types', () => {
-    const onSearchChange = vi.fn()
-    render(<Header {...defaultProps} onSearchChange={onSearchChange} />)
+  it('updates store search when user types', () => {
+    render(<Header onCarModeEnter={vi.fn()} />)
     fireEvent.change(screen.getByPlaceholderText('חיפוש תחנה...'), {
       target: { value: 'jazz' },
     })
-    expect(onSearchChange).toHaveBeenCalledWith('jazz')
+    expect(useStore.getState().search).toBe('jazz')
   })
 
   it('shows clear button when search has content', () => {
-    render(<Header {...defaultProps} search="rock" />)
+    useStore.setState({ search: 'rock' })
+    render(<Header onCarModeEnter={vi.fn()} />)
     expect(screen.getByLabelText('נקה חיפוש')).toBeInTheDocument()
   })
 
   it('hides clear button when search is empty', () => {
-    render(<Header {...defaultProps} search="" />)
+    render(<Header onCarModeEnter={vi.fn()} />)
     expect(screen.queryByLabelText('נקה חיפוש')).not.toBeInTheDocument()
   })
 
   it('clears search when clear button is clicked', () => {
-    const onSearchChange = vi.fn()
-    render(<Header {...defaultProps} search="rock" onSearchChange={onSearchChange} />)
+    useStore.setState({ search: 'rock' })
+    render(<Header onCarModeEnter={vi.fn()} />)
     fireEvent.click(screen.getByLabelText('נקה חיפוש'))
-    expect(onSearchChange).toHaveBeenCalledWith('')
+    expect(useStore.getState().search).toBe('')
   })
 
   it('clears search on Escape key', () => {
-    const onSearchChange = vi.fn()
-    render(<Header {...defaultProps} onSearchChange={onSearchChange} />)
+    useStore.setState({ search: 'rock' })
+    render(<Header onCarModeEnter={vi.fn()} />)
     fireEvent.keyDown(window, { key: 'Escape' })
-    expect(onSearchChange).toHaveBeenCalledWith('')
+    expect(useStore.getState().search).toBe('')
   })
 
   it('shows light-mode button label in dark mode', () => {
-    render(<Header {...defaultProps} darkMode={true} />)
+    useStore.setState({ isDarkMode: true })
+    render(<Header onCarModeEnter={vi.fn()} />)
     expect(screen.getByLabelText('מצב בהיר')).toBeInTheDocument()
   })
 
   it('shows dark-mode button label in light mode', () => {
-    render(<Header {...defaultProps} darkMode={false} />)
+    useStore.setState({ isDarkMode: false })
+    render(<Header onCarModeEnter={vi.fn()} />)
     expect(screen.getByLabelText('מצב כהה')).toBeInTheDocument()
   })
 
-  it('calls onDarkModeToggle when toggle button is clicked', () => {
-    const onDarkModeToggle = vi.fn()
-    render(<Header {...defaultProps} onDarkModeToggle={onDarkModeToggle} />)
+  it('toggles dark mode when toggle button is clicked', () => {
+    useStore.setState({ isDarkMode: true })
+    render(<Header onCarModeEnter={vi.fn()} />)
     fireEvent.click(screen.getByLabelText('מצב בהיר'))
-    expect(onDarkModeToggle).toHaveBeenCalledTimes(1)
+    expect(useStore.getState().isDarkMode).toBe(false)
   })
 
   it('renders a car mode button that is hidden on larger screens', () => {
-    render(<Header {...defaultProps} />)
+    render(<Header onCarModeEnter={vi.fn()} />)
     const carButton = screen.getByLabelText('מצב רכב')
     expect(carButton).toBeInTheDocument()
     expect(carButton.className).toContain('sm:hidden')
@@ -80,7 +80,7 @@ describe('Header', () => {
 
   it('calls onCarModeEnter when the car mode button is clicked', () => {
     const onCarModeEnter = vi.fn()
-    render(<Header {...defaultProps} onCarModeEnter={onCarModeEnter} />)
+    render(<Header onCarModeEnter={onCarModeEnter} />)
     fireEvent.click(screen.getByLabelText('מצב רכב'))
     expect(onCarModeEnter).toHaveBeenCalledTimes(1)
   })

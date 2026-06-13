@@ -11,29 +11,27 @@ const BAR_STYLES = [1, 2, 3, 4].map((i) => ({
 
 interface StationCardProps {
   station: Station;
-  isPlaying: boolean;
-  isActive: boolean;
-  isFavorite: boolean;
-  isHidden: boolean;
   viewMode?: 'grid' | 'list';
-  onPlay: () => void;
-  onToggleFavorite: () => void;
-  onToggleHide: () => void;
 }
 
-export function StationCard({
-  station,
-  isPlaying,
-  isActive,
-  isFavorite,
-  isHidden,
-  viewMode = 'grid',
-  onPlay,
-  onToggleFavorite,
-  onToggleHide,
-}: StationCardProps) {
+export function StationCard({ station, viewMode = 'grid' }: StationCardProps) {
   const { imgSrc, setImgSrc } = useStationCard(station);
   const isDarkMode = useStore((state) => state.isDarkMode);
+  const currentStation = useStore((state) => state.currentStation);
+  const isPlayingGlobal = useStore((state) => state.isPlaying);
+  const favorites = useStore((state) => state.favorites);
+  const hidden = useStore((state) => state.hidden);
+  const handlePlay = useStore((state) => state.handlePlay);
+  const toggleFavorite = useStore((state) => state.toggleFavorite);
+  const toggleHidden = useStore((state) => state.toggleHidden);
+
+  const isActive = currentStation?.slug === station.slug;
+  const isPlaying = isActive && isPlayingGlobal;
+  const isFavorite = favorites.includes(station.slug);
+  const isHidden = hidden.includes(station.slug);
+  const onPlay = () => handlePlay(station);
+  const onToggleFavorite = () => toggleFavorite(station.slug);
+  const onToggleHide = () => toggleHidden(station.slug);
 
   if (viewMode === 'list') {
     return (

@@ -1,13 +1,13 @@
+import { useNavigate } from 'react-router-dom';
+import { useShallow } from 'zustand/react/shallow';
 import type { Station } from '../../../types';
+import { useStore, getFilteredStations } from '../../../store/store';
 
-interface UseCarStationInfoParams {
-  station: Station;
-  filteredList: Station[];
-  handlePlay: (station: Station) => void;
-  onNavigate: (station: Station) => void;
-}
+export function useCarStationInfo(station: Station) {
+  const navigate = useNavigate();
+  const filteredList = useStore(useShallow(getFilteredStations));
+  const handlePlay = useStore((state) => state.handlePlay);
 
-export function useCarStationInfo({ station, filteredList, handlePlay, onNavigate }: UseCarStationInfoParams) {
   const idx = filteredList.findIndex((s) => s.slug === station.slug);
   const hasMultiple = filteredList.length > 1;
 
@@ -17,7 +17,7 @@ export function useCarStationInfo({ station, filteredList, handlePlay, onNavigat
     const targetIdx = idx === -1 ? base : (base + offset + filteredList.length) % filteredList.length;
     const target = filteredList[targetIdx];
     handlePlay(target);
-    onNavigate(target);
+    navigate(`/car/${target.slug}`);
   };
 
   const goNext = () => goToOffset(1);

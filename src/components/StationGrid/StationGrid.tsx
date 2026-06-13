@@ -1,47 +1,28 @@
-import { useStore } from '../../store/store';
-import type { Station } from '../../types';
+import { useShallow } from 'zustand/react/shallow';
+import { useStore, getFilteredStations } from '../../store/store';
 import type { Tab } from '../../utils/filterStations';
 import { StationCard } from '../StationCard/StationCard';
 import { ListViewIcon, GridViewIcon } from '../common/icons';
-import { useStationGrid } from './useStationGrid';
 
-interface StationGridProps {
-  stations: Station[];
-  loading: boolean;
-  search: string;
-  activeSlug: string | null;
-  isPlaying: boolean;
-  favorites: string[];
-  hidden: string[];
-  tab: Tab;
-  setTab: (tab: Tab) => void;
-  onPlay: (station: Station) => void;
-  onToggleFavorite: (slug: string) => void;
-  onToggleHide: (slug: string) => void;
-}
-
-export function StationGrid({
-  stations,
-  search,
-  activeSlug,
-  isPlaying,
-  favorites,
-  hidden,
-  tab,
-  setTab,
-  onPlay,
-  onToggleFavorite,
-  onToggleHide,
-}: StationGridProps) {
+export function StationGrid() {
   const isDarkMode = useStore((state) => state.isDarkMode);
-  const { viewMode, setViewModePersisted, filtered, tabs } = useStationGrid({
-    stations,
-    search,
-    favorites,
-    hidden,
-    tab,
-    setTab,
-  });
+  const tab = useStore((state) => state.tab);
+  const setTab = useStore((state) => state.setTab);
+  const viewMode = useStore((state) => state.viewMode);
+  const setViewMode = useStore((state) => state.setViewMode);
+  const favorites = useStore((state) => state.favorites);
+  const hidden = useStore((state) => state.hidden);
+  const stations = useStore((state) => state.stations);
+  const filtered = useStore(useShallow(getFilteredStations));
+
+  const hiddenCount = stations.filter((s) => hidden.includes(s.slug)).length;
+
+  const tabs: { id: Tab; label: string }[] = [
+    { id: 'all', label: 'הכל' },
+    { id: 'favorites', label: `מועדפים${favorites.length ? ` (${favorites.length})` : ''}` },
+    { id: 'popular', label: 'פופולרי' },
+    ...(hiddenCount > 0 ? [{ id: 'hidden' as Tab, label: `מוסתרות (${hiddenCount})` }] : []),
+  ];
 
   return (
     <div className="flex-1 p-4 max-w-7xl mx-auto w-full">
@@ -66,7 +47,7 @@ export function StationGrid({
         {/* View toggle */}
         <button
           className={`shrink-0 p-2 mb-1 rounded-lg transition-colors ${isDarkMode ? 'text-white/50 hover:text-white/80 hover:bg-white/5' : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100'}`}
-          onClick={() => setViewModePersisted(viewMode === 'grid' ? 'list' : 'grid')}
+          onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
           title={viewMode === 'grid' ? 'תצוגת רשימה' : 'תצוגת רשת'}
         >
           {viewMode === 'grid' ? <ListViewIcon /> : <GridViewIcon />}
@@ -84,34 +65,13 @@ export function StationGrid({
           className={`flex flex-col rounded-xl overflow-hidden ${isDarkMode ? 'divide-y divide-white/5' : 'border border-gray-200 divide-y divide-gray-100'}`}
         >
           {filtered.map((station) => (
-            <StationCard
-              key={station.slug}
-              station={station}
-              isActive={activeSlug === station.slug}
-              isPlaying={isPlaying && activeSlug === station.slug}
-              isFavorite={favorites.includes(station.slug)}
-              isHidden={hidden.includes(station.slug)}
-              viewMode="list"
-              onPlay={() => onPlay(station)}
-              onToggleFavorite={() => onToggleFavorite(station.slug)}
-              onToggleHide={() => onToggleHide(station.slug)}
-            />
+            <StationCard key={station.slug} station={station} viewMode="list" />
           ))}
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
           {filtered.map((station) => (
-            <StationCard
-              key={station.slug}
-              station={station}
-              isActive={activeSlug === station.slug}
-              isPlaying={isPlaying && activeSlug === station.slug}
-              isFavorite={favorites.includes(station.slug)}
-              isHidden={hidden.includes(station.slug)}
-              onPlay={() => onPlay(station)}
-              onToggleFavorite={() => onToggleFavorite(station.slug)}
-              onToggleHide={() => onToggleHide(station.slug)}
-            />
+            <StationCard key={station.slug} station={station} />
           ))}
         </div>
       )}

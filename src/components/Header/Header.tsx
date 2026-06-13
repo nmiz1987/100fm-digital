@@ -3,12 +3,12 @@ import { SunIcon, MoonIcon, CarIcon } from '../common/icons';
 import { useStore } from '../../store/store';
 
 interface HeaderProps {
-  search: string;
-  onSearchChange: (v: string) => void;
   onCarModeEnter: () => void;
 }
 
-export function Header({ search, onSearchChange, onCarModeEnter }: HeaderProps) {
+export function Header({ onCarModeEnter }: HeaderProps) {
+  const search = useStore((state) => state.search);
+  const onSearchChange = useStore((state) => state.setSearch);
   const { inputRef } = useHeader(onSearchChange);
   const onDarkModeToggle = useStore((state) => state.handleDarkModeToggle);
   const isDarkMode = useStore((state) => state.isDarkMode);

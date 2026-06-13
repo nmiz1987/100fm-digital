@@ -1,7 +1,8 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { PlayerBar } from './PlayerBar'
 import type { Station, Slider } from '../../types'
+import { useStore } from '../../store/store'
 
 const slider1: Slider = { audio: 'http://slider1' }
 const slider2: Slider = { audio: 'http://slider2' }
@@ -16,222 +17,236 @@ const station: Station = {
 const stationWithSliders: Station = { ...station, sliders: [slider1, slider2] }
 const stationWithCover: Station = { ...station, cover: 'cover.png' }
 
-const defaultProps = {
-  station,
-  currentSlider: null as Slider | null,
-  sliderLabels: [] as string[],
-  nowPlaying: null,
-  isPlaying: false,
-  isLoading: false,
-  volume: 0.8,
-  isFavorite: false,
-  darkMode: true,
-  onPlayPause: vi.fn(),
-  onStop: vi.fn(),
-  onVolumeChange: vi.fn(),
-  onToggleFavorite: vi.fn(),
-  onSelectLive: vi.fn(),
-  onSelectSlider: vi.fn(),
-}
+beforeEach(() => {
+  useStore.setState({
+    currentStation: station,
+    currentSlider: null,
+    sliderLabels: [],
+    nowPlaying: null,
+    isPlaying: false,
+    isLoading: false,
+    volume: 0.8,
+    favorites: [],
+    isDarkMode: true,
+  })
+})
 
 describe('PlayerBar', () => {
+  it('renders nothing when there is no current station', () => {
+    useStore.setState({ currentStation: null })
+    const { container } = render(<PlayerBar />)
+    expect(container.firstChild).toBeNull()
+  })
+
   it('renders station name', () => {
-    render(<PlayerBar {...defaultProps} />)
+    render(<PlayerBar />)
     expect(screen.getByText('Rock FM')).toBeInTheDocument()
   })
 
   it('shows play icon when not playing and not loading', () => {
-    render(<PlayerBar {...defaultProps} isPlaying={false} isLoading={false} />)
+    render(<PlayerBar />)
     expect(screen.getByTitle('נגן')).toBeInTheDocument()
   })
 
   it('shows pause icon when playing', () => {
-    render(<PlayerBar {...defaultProps} isPlaying={true} isLoading={false} />)
+    useStore.setState({ isPlaying: true })
+    render(<PlayerBar />)
     expect(screen.getByTitle('השהה')).toBeInTheDocument()
   })
 
   it('shows spinner when loading', () => {
-    render(<PlayerBar {...defaultProps} isLoading={true} />)
+    useStore.setState({ isLoading: true })
+    render(<PlayerBar />)
     expect(document.querySelector('.animate-spin')).toBeInTheDocument()
   })
 
-  it('calls onPlayPause when play button clicked', () => {
-    const onPlayPause = vi.fn()
-    render(<PlayerBar {...defaultProps} onPlayPause={onPlayPause} />)
-    fireEvent.click(screen.getByTitle('נגן'))
-    expect(onPlayPause).toHaveBeenCalledTimes(1)
+  it('calls pause when playing and play/pause button clicked', () => {
+    useStore.setState({ isPlaying: true })
+    const pauseSpy = vi.spyOn(useStore.getState(), 'pause')
+    render(<PlayerBar />)
+    fireEvent.click(screen.getByTitle('השהה'))
+    expect(pauseSpy).toHaveBeenCalled()
   })
 
-  it('calls onStop when stop button clicked', () => {
-    const onStop = vi.fn()
-    render(<PlayerBar {...defaultProps} onStop={onStop} />)
+  it('calls resume when paused and play/pause button clicked', () => {
+    const resumeSpy = vi.spyOn(useStore.getState(), 'resume')
+    render(<PlayerBar />)
+    fireEvent.click(screen.getByTitle('נגן'))
+    expect(resumeSpy).toHaveBeenCalled()
+  })
+
+  it('clears the current station when stop button clicked', () => {
+    render(<PlayerBar />)
     fireEvent.click(screen.getByTitle('עצור'))
-    expect(onStop).toHaveBeenCalledTimes(1)
+    expect(useStore.getState().currentStation).toBeNull()
   })
 
   it('shows filled heart when isFavorite', () => {
-    render(<PlayerBar {...defaultProps} isFavorite={true} />)
+    useStore.setState({ favorites: [station.slug] })
+    render(<PlayerBar />)
     expect(screen.getByTitle('הסר ממועדפים')).toBeInTheDocument()
   })
 
   it('shows empty heart when not isFavorite', () => {
-    render(<PlayerBar {...defaultProps} isFavorite={false} />)
+    render(<PlayerBar />)
     expect(screen.getByTitle('הוסף למועדפים')).toBeInTheDocument()
   })
 
-  it('calls onToggleFavorite when heart button clicked', () => {
-    const onToggleFavorite = vi.fn()
-    render(<PlayerBar {...defaultProps} onToggleFavorite={onToggleFavorite} />)
+  it('toggles favorite when heart button clicked', () => {
+    render(<PlayerBar />)
     fireEvent.click(screen.getByTitle('הוסף למועדפים'))
-    expect(onToggleFavorite).toHaveBeenCalledTimes(1)
+    expect(useStore.getState().favorites).toEqual([station.slug])
   })
 
   it('shows track line with artist and name', () => {
-    render(<PlayerBar {...defaultProps} nowPlaying={{ artist: 'Radiohead', name: 'Creep', timestamp: 0, before: 0 }} />)
+    useStore.setState({ nowPlaying: { artist: 'Radiohead', name: 'Creep', timestamp: 0, before: 0 } })
+    render(<PlayerBar />)
     expect(screen.getByText('Radiohead — Creep')).toBeInTheDocument()
   })
 
   it('shows only track name when artist is empty', () => {
-    render(<PlayerBar {...defaultProps} nowPlaying={{ artist: '', name: 'Creep', timestamp: 0, before: 0 }} />)
+    useStore.setState({ nowPlaying: { artist: '', name: 'Creep', timestamp: 0, before: 0 } })
+    render(<PlayerBar />)
     expect(screen.getByText('Creep')).toBeInTheDocument()
   })
 
   it('shows fallback when artist present but name empty', () => {
-    render(<PlayerBar {...defaultProps} nowPlaying={{ artist: 'Radiohead', name: '', timestamp: 0, before: 0 }} />)
+    useStore.setState({ nowPlaying: { artist: 'Radiohead', name: '', timestamp: 0, before: 0 } })
+    render(<PlayerBar />)
     expect(screen.getByText('שידור חי')).toBeInTheDocument()
   })
 
   it('shows loading text when isLoading', () => {
-    render(<PlayerBar {...defaultProps} isLoading={true} />)
+    useStore.setState({ isLoading: true })
+    render(<PlayerBar />)
     expect(screen.getByText('טוען...')).toBeInTheDocument()
   })
 
   it('shows שידור חי when no track and no sliders', () => {
-    render(<PlayerBar {...defaultProps} />)
+    render(<PlayerBar />)
     expect(screen.getByText('שידור חי')).toBeInTheDocument()
   })
 
   it('shows live label from sliderLabels[0] in info when has sliders and no current slider', () => {
-    render(<PlayerBar {...defaultProps} station={stationWithSliders} sliderLabels={['Live Now', 'S1', 'S2']} />)
+    useStore.setState({ currentStation: stationWithSliders, sliderLabels: ['Live Now', 'S1', 'S2'] })
+    render(<PlayerBar />)
     const matches = screen.getAllByText('Live Now')
     expect(matches.length).toBeGreaterThanOrEqual(1)
   })
 
   it('shows שידור מושהה when currentSlider has no label', () => {
-    render(<PlayerBar {...defaultProps} station={stationWithSliders} currentSlider={slider1} sliderLabels={[]} />)
+    useStore.setState({ currentStation: stationWithSliders, currentSlider: slider1, sliderLabels: [] })
+    render(<PlayerBar />)
     expect(screen.getByText('שידור מושהה')).toBeInTheDocument()
   })
 
   it('shows slider label in info when currentSlider is active with label', () => {
-    // sliderLabels[0]=live, sliderLabels[1]=slider1 label, sliderLabels[2]=slider2 label
-    render(<PlayerBar {...defaultProps} station={stationWithSliders} currentSlider={slider1} sliderLabels={['Live Now', 'Pop Mix', 'Rock Mix']} />)
-    // Label appears in both the info <p> and the active tab button
+    useStore.setState({
+      currentStation: stationWithSliders,
+      currentSlider: slider1,
+      sliderLabels: ['Live Now', 'Pop Mix', 'Rock Mix'],
+    })
+    render(<PlayerBar />)
     expect(screen.getAllByText('Pop Mix').length).toBeGreaterThanOrEqual(1)
   })
 
   it('does not show slider tab row when station has no sliders', () => {
-    render(<PlayerBar {...defaultProps} />)
-    // The live tab button only appears in the slider row
+    render(<PlayerBar />)
     expect(screen.queryByRole('button', { name: 'Rock FM #1' })).not.toBeInTheDocument()
   })
 
   it('shows slider tab row when station has sliders', () => {
-    // sliderLabels[0]=live label, [1]=slider1 label, [2]=slider2 label
-    render(<PlayerBar {...defaultProps} station={stationWithSliders} sliderLabels={['Live Now', 'S1', 'S2']} />)
+    useStore.setState({ currentStation: stationWithSliders, sliderLabels: ['Live Now', 'S1', 'S2'] })
+    render(<PlayerBar />)
     expect(screen.getByRole('button', { name: 'Live Now' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'S1' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'S2' })).toBeInTheDocument()
   })
 
-  it('calls onSelectLive when live tab clicked', () => {
-    const onSelectLive = vi.fn()
-    render(<PlayerBar {...defaultProps} station={stationWithSliders} sliderLabels={['Live Now', 'S1', 'S2']} onSelectLive={onSelectLive} />)
+  it('returns to live playback when live tab clicked', () => {
+    useStore.setState({ currentStation: stationWithSliders, currentSlider: slider1, sliderLabels: ['Live Now', 'S1', 'S2'] })
+    render(<PlayerBar />)
     fireEvent.click(screen.getByRole('button', { name: 'Live Now' }))
-    expect(onSelectLive).toHaveBeenCalledTimes(1)
+    expect(useStore.getState().currentSlider).toBeNull()
   })
 
-  it('calls onSelectSlider with correct slider when tab clicked', () => {
-    const onSelectSlider = vi.fn()
-    // sliderLabels[0]=live, [1]=slider1, [2]=slider2
-    render(<PlayerBar {...defaultProps} station={stationWithSliders} sliderLabels={['Live Now', 'S1', 'S2']} onSelectSlider={onSelectSlider} />)
+  it('selects the correct slider when tab clicked', () => {
+    useStore.setState({ currentStation: stationWithSliders, sliderLabels: ['Live Now', 'S1', 'S2'] })
+    render(<PlayerBar />)
     fireEvent.click(screen.getByRole('button', { name: 'S1' }))
-    expect(onSelectSlider).toHaveBeenCalledWith(slider1)
+    expect(useStore.getState().currentSlider).toEqual(slider1)
   })
 
   it('uses fallback slider label when sliderLabels entry is missing', () => {
-    render(<PlayerBar {...defaultProps} station={stationWithSliders} sliderLabels={[]} />)
-    // Slider tabs show fallback labels: "Rock FM #2", "Rock FM #3"
+    useStore.setState({ currentStation: stationWithSliders, sliderLabels: [] })
+    render(<PlayerBar />)
     expect(screen.getByRole('button', { name: 'Rock FM #2' })).toBeInTheDocument()
   })
 
-  it('calls onVolumeChange with parsed float when slider changes', () => {
-    const onVolumeChange = vi.fn()
-    render(<PlayerBar {...defaultProps} onVolumeChange={onVolumeChange} />)
+  it('updates volume when slider changes', () => {
+    render(<PlayerBar />)
     const slider = screen.getByTitle('ווליום')
     fireEvent.change(slider, { target: { value: '0.5' } })
-    expect(onVolumeChange).toHaveBeenCalledWith(0.5)
+    expect(useStore.getState().volume).toBe(0.5)
   })
 
   it('uses station cover image when available', () => {
-    render(<PlayerBar {...defaultProps} station={stationWithCover} />)
+    useStore.setState({ currentStation: stationWithCover })
+    render(<PlayerBar />)
     const img = screen.getByAltText('Rock FM') as HTMLImageElement
     expect(img.src).toContain('cover.png')
   })
 
   it('uses station logo when no cover', () => {
-    render(<PlayerBar {...defaultProps} />)
+    render(<PlayerBar />)
     const img = screen.getByAltText('Rock FM') as HTMLImageElement
     expect(img.src).toContain('logo.png')
   })
 
   it('falls back to logo on image error', () => {
-    render(<PlayerBar {...defaultProps} station={stationWithCover} />)
+    useStore.setState({ currentStation: stationWithCover })
+    render(<PlayerBar />)
     const img = screen.getByAltText('Rock FM') as HTMLImageElement
     fireEvent.error(img)
     expect(img.src).toContain('logo.png')
   })
 
   it('renders in light mode without errors', () => {
-    const { container } = render(<PlayerBar {...defaultProps} darkMode={false} />)
+    useStore.setState({ isDarkMode: false })
+    const { container } = render(<PlayerBar />)
     expect(container.firstChild).toBeInTheDocument()
   })
 
   it('volume slider shows muted icon at volume 0', () => {
-    render(<PlayerBar {...defaultProps} volume={0} />)
-    // Muted icon has cross lines (x1=23 or x1=17)
+    useStore.setState({ volume: 0 })
+    render(<PlayerBar />)
     const svgLines = document.querySelectorAll('line[x1="23"]')
     expect(svgLines.length).toBeGreaterThan(0)
   })
 
   it('volume slider shows low icon at volume < 0.5', () => {
-    render(<PlayerBar {...defaultProps} volume={0.3} />)
-    // Low volume icon has a single arc path, not the mute X lines
+    useStore.setState({ volume: 0.3 })
+    render(<PlayerBar />)
     const svgLines = document.querySelectorAll('line[x1="23"]')
     expect(svgLines.length).toBe(0)
   })
 
   it('volume slider shows high icon at volume >= 0.5', () => {
-    render(<PlayerBar {...defaultProps} volume={0.8} />)
-    // High volume icon has two arc paths; we just check it renders
+    useStore.setState({ volume: 0.8 })
+    render(<PlayerBar />)
     expect(screen.getByTitle('ווליום')).toBeInTheDocument()
   })
 
   it('marks active slider tab when currentSlider matches', () => {
-    // sliderLabels[0]=live, [1]=slider1, [2]=slider2
-    render(
-      <PlayerBar
-        {...defaultProps}
-        station={stationWithSliders}
-        currentSlider={slider1}
-        sliderLabels={['Live Now', 'S1', 'S2']}
-      />
-    )
+    useStore.setState({ currentStation: stationWithSliders, currentSlider: slider1, sliderLabels: ['Live Now', 'S1', 'S2'] })
+    render(<PlayerBar />)
     const activeTab = screen.getByRole('button', { name: 'S1' })
     expect(activeTab.className).toContain('bg-[#e8192c]')
   })
 
   it('marks live tab active when no currentSlider', () => {
-    render(<PlayerBar {...defaultProps} station={stationWithSliders} sliderLabels={['Live Now', 'S1', 'S2']} currentSlider={null} />)
+    useStore.setState({ currentStation: stationWithSliders, currentSlider: null, sliderLabels: ['Live Now', 'S1', 'S2'] })
+    render(<PlayerBar />)
     const liveTab = screen.getByRole('button', { name: 'Live Now' })
     expect(liveTab.className).toContain('bg-[#e8192c]')
   })

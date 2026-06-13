@@ -1,18 +1,18 @@
-import { useStore } from '../../../store/store';
+import { useNavigate } from 'react-router-dom';
+import { useShallow } from 'zustand/react/shallow';
+import { useStore, getFilteredStations } from '../../../store/store';
 import type { Station } from '../../../types';
 import { useCarStationImage } from '../useCarStationImage';
 
-interface CarStationListProps {
-  stations: Station[];
-  loading: boolean;
-  activeSlug: string | null;
-  onSelect: (station: Station) => void;
-}
-
-export function CarStationList({ stations, loading, activeSlug, onSelect }: CarStationListProps) {
+export function CarStationList() {
+  const navigate = useNavigate();
   const isDarkMode = useStore((state) => state.isDarkMode);
+  const stationsLoading = useStore((state) => state.stationsLoading);
+  const currentStation = useStore((state) => state.currentStation);
+  const handlePlay = useStore((state) => state.handlePlay);
+  const stations = useStore(useShallow(getFilteredStations));
 
-  if (loading) {
+  if (stationsLoading) {
     return <div className={`flex-1 flex items-center justify-center text-lg ${isDarkMode ? 'text-white/40' : 'text-gray-400'}`}>טוען תחנות...</div>;
   }
 
@@ -27,9 +27,12 @@ export function CarStationList({ stations, loading, activeSlug, onSelect }: CarS
           <CarStationListItem
             key={station.slug}
             station={station}
-            isDarkMode={isDarkMode}
-            isActive={activeSlug === station.slug}
-            onSelect={() => onSelect(station)}
+            darkMode={isDarkMode}
+            isActive={currentStation?.slug === station.slug}
+            onSelect={() => {
+              handlePlay(station);
+              navigate(`/car/${station.slug}`);
+            }}
           />
         ))}
       </ul>

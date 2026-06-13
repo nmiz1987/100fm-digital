@@ -1,9 +1,9 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import { CarApp } from './CarApp'
 import type { Station } from '../../types'
-import type { usePlayer } from '../../hooks/usePlayer'
+import { useStore } from '../../store/store'
 
 const makeStation = (slug: string, name: string, overrides: Partial<Station> = {}): Station => ({
   name,
@@ -15,49 +15,31 @@ const makeStation = (slug: string, name: string, overrides: Partial<Station> = {
 
 const stations: Station[] = [makeStation('rock-fm', 'Rock FM'), makeStation('jazz-club', 'Jazz Club')]
 
-function makePlayer(overrides: Partial<ReturnType<typeof usePlayer>> = {}): ReturnType<typeof usePlayer> {
-  return {
+beforeEach(() => {
+  useStore.setState({
+    isDarkMode: true,
+    stations,
+    stationsLoading: false,
+    tab: 'all',
+    search: '',
+    favorites: [],
+    hidden: [],
     currentStation: null,
     currentSlider: null,
     isPlaying: false,
     isLoading: false,
-    volume: 0.8,
-    play: vi.fn(),
-    playSlider: vi.fn(),
-    playLive: vi.fn(),
-    pause: vi.fn(),
-    resume: vi.fn(),
-    stop: vi.fn(),
-    setVolume: vi.fn(),
-    ...overrides,
-  }
-}
+    nowPlaying: null,
+    sliderLabels: [],
+  })
+})
 
-const defaultProps = {
-  darkMode: true,
-  stations,
-  loading: false,
-  tab: 'all' as const,
-  search: '',
-  favorites: [] as string[],
-  hidden: [] as string[],
-  player: makePlayer(),
-  nowPlaying: null,
-  sliderLabels: [] as string[],
-  handlePlay: vi.fn(),
-  handlePlayPause: vi.fn(),
-  handleSelectSlider: vi.fn(),
-  handleSelectLive: vi.fn(),
-  handleToggleFavorite: vi.fn(),
-}
-
-function renderCarApp(initialPath: string, props: Partial<typeof defaultProps> = {}) {
+function renderCarApp(initialPath: string) {
   return render(
     <MemoryRouter initialEntries={[initialPath]}>
       <Routes>
         <Route path="/" element={<div>Home</div>} />
-        <Route path="/car" element={<CarApp {...defaultProps} {...props} />} />
-        <Route path="/car/:slug" element={<CarApp {...defaultProps} {...props} />} />
+        <Route path="/car" element={<CarApp />} />
+        <Route path="/car/:slug" element={<CarApp />} />
       </Routes>
     </MemoryRouter>
   )
@@ -82,12 +64,11 @@ describe('CarApp', () => {
   })
 
   it('plays and navigates when a station is selected from the list', () => {
-    const handlePlay = vi.fn()
-    renderCarApp('/car', { handlePlay })
+    renderCarApp('/car')
 
     fireEvent.click(screen.getByText('Rock FM'))
 
-    expect(handlePlay).toHaveBeenCalledWith(stations[0])
+    expect(useStore.getState().currentStation).toEqual(stations[0])
     expect(screen.getByLabelText('חזרה לרשימת התחנות')).toBeInTheDocument()
     expect(screen.queryByText('Jazz Club')).not.toBeInTheDocument()
   })
@@ -110,7 +91,8 @@ describe('CarApp', () => {
   })
 
   it('respects the active tab/search filter for the station list', () => {
-    renderCarApp('/car', { search: 'jazz' })
+    useStore.setState({ search: 'jazz' })
+    renderCarApp('/car')
     expect(screen.queryByText('Rock FM')).not.toBeInTheDocument()
     expect(screen.getByText('Jazz Club')).toBeInTheDocument()
   })

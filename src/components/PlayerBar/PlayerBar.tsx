@@ -1,50 +1,28 @@
 import { forwardRef } from 'react';
-import type { Station, Slider, NowPlaying } from '../../types';
 import { PauseIcon, PlayIcon } from '../common/icons';
 import { VolumeSlider } from './VolumeSlider/VolumeSlider';
 import { SliderTabs } from './SliderTabs/SliderTabs';
 import { usePlayerBar } from './usePlayerBar';
 import { useStore } from '../../store/store';
 
-interface PlayerBarProps {
-  station: Station;
-  currentSlider: Slider | null;
-  sliderLabels: string[];
-  nowPlaying: NowPlaying | null;
-  isPlaying: boolean;
-  isLoading: boolean;
-  volume: number;
-  isFavorite: boolean;
-
-  onPlayPause: () => void;
-  onStop: () => void;
-  onVolumeChange: (v: number) => void;
-  onToggleFavorite: () => void;
-  onSelectLive: () => void;
-  onSelectSlider: (slider: Slider) => void;
-}
-
-export const PlayerBar = forwardRef<HTMLDivElement, PlayerBarProps>(function PlayerBar(
-  {
-    station,
-    currentSlider,
-    sliderLabels,
-    nowPlaying,
-    isPlaying,
-    isLoading,
-    volume,
-    isFavorite,
-    onPlayPause,
-    onStop,
-    onVolumeChange,
-    onToggleFavorite,
-    onSelectLive,
-    onSelectSlider,
-  },
-  ref,
-) {
-  const { hasSliders, trackLine, currentSliderIndex } = usePlayerBar({ station, currentSlider, nowPlaying });
+export const PlayerBar = forwardRef<HTMLDivElement, object>(function PlayerBar(_props, ref) {
+  const station = useStore((state) => state.currentStation);
+  const currentSlider = useStore((state) => state.currentSlider);
+  const sliderLabels = useStore((state) => state.sliderLabels);
+  const nowPlaying = useStore((state) => state.nowPlaying);
+  const isPlaying = useStore((state) => state.isPlaying);
+  const isLoading = useStore((state) => state.isLoading);
+  const favorites = useStore((state) => state.favorites);
   const isDarkMode = useStore((state) => state.isDarkMode);
+  const handlePlayPause = useStore((state) => state.handlePlayPause);
+  const stop = useStore((state) => state.stop);
+  const toggleFavorite = useStore((state) => state.toggleFavorite);
+
+  const { hasSliders, trackLine, currentSliderIndex } = usePlayerBar({ station, currentSlider, nowPlaying });
+
+  if (!station) return null;
+
+  const isFavorite = favorites.includes(station.slug);
 
   return (
     <div
@@ -84,7 +62,7 @@ export const PlayerBar = forwardRef<HTMLDivElement, PlayerBarProps>(function Pla
         {/* Controls */}
         <div className="flex items-center gap-2 shrink-0">
           <button
-            onClick={onToggleFavorite}
+            onClick={() => toggleFavorite(station.slug)}
             className={`p-2 rounded-full transition-colors text-lg leading-none
               ${isFavorite ? 'text-[#e8192c]' : isDarkMode ? 'text-white/40 hover:text-white/80' : 'text-gray-400 hover:text-gray-700'}`}
             title={isFavorite ? 'הסר ממועדפים' : 'הוסף למועדפים'}
@@ -93,7 +71,7 @@ export const PlayerBar = forwardRef<HTMLDivElement, PlayerBarProps>(function Pla
           </button>
 
           <button
-            onClick={onPlayPause}
+            onClick={handlePlayPause}
             disabled={isLoading}
             className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold transition-all
               ${isLoading ? 'bg-[#e8192c]/40 cursor-wait' : 'bg-[#e8192c] hover:bg-[#c8141f] active:scale-95'}`}
@@ -109,7 +87,7 @@ export const PlayerBar = forwardRef<HTMLDivElement, PlayerBarProps>(function Pla
           </button>
 
           <button
-            onClick={onStop}
+            onClick={stop}
             className={`p-2 transition-colors text-sm rounded-full ${isDarkMode ? 'text-white/40 hover:text-white/80' : 'text-gray-400 hover:text-gray-700'}`}
             title="עצור"
           >
@@ -117,18 +95,10 @@ export const PlayerBar = forwardRef<HTMLDivElement, PlayerBarProps>(function Pla
           </button>
         </div>
 
-        <VolumeSlider volume={volume} onChange={onVolumeChange} />
+        <VolumeSlider />
       </div>
 
-      {hasSliders && (
-        <SliderTabs
-          station={station}
-          currentSlider={currentSlider}
-          sliderLabels={sliderLabels}
-          onSelectLive={onSelectLive}
-          onSelectSlider={onSelectSlider}
-        />
-      )}
+      {hasSliders && <SliderTabs station={station} />}
     </div>
   );
 });

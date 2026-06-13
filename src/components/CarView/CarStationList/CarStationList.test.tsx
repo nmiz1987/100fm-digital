@@ -1,7 +1,9 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import { CarStationList } from './CarStationList'
 import type { Station } from '../../../types'
+import { useStore } from '../../../store/store'
 
 const makeStation = (slug: string, name: string, overrides: Partial<Station> = {}): Station => ({
   name,
@@ -16,52 +18,59 @@ const stations: Station[] = [
   makeStation('jazz-club', 'Jazz Club'),
 ]
 
-const defaultProps = {
-  stations,
-  loading: false,
-  darkMode: true,
-  activeSlug: null,
-  onSelect: vi.fn(),
-}
+beforeEach(() => {
+  useStore.setState({
+    isDarkMode: true,
+    stations,
+    stationsLoading: false,
+    tab: 'all',
+    search: '',
+    favorites: [],
+    hidden: [],
+    currentStation: null,
+  })
+})
 
 describe('CarStationList', () => {
   it('renders station names', () => {
-    render(<CarStationList {...defaultProps} />)
+    render(<MemoryRouter><CarStationList /></MemoryRouter>)
     expect(screen.getByText('Rock FM')).toBeInTheDocument()
     expect(screen.getByText('Jazz Club')).toBeInTheDocument()
   })
 
   it('renders station cover images with fallback to logo', () => {
-    render(<CarStationList {...defaultProps} />)
+    render(<MemoryRouter><CarStationList /></MemoryRouter>)
     expect(screen.getByAltText('Rock FM')).toHaveAttribute('src', 'rock-cover.png')
     expect(screen.getByAltText('Jazz Club')).toHaveAttribute('src', 'jazz-club-logo.png')
   })
 
-  it('calls onSelect with the station when clicked', () => {
-    const onSelect = vi.fn()
-    render(<CarStationList {...defaultProps} onSelect={onSelect} />)
+  it('plays the station and navigates when clicked', () => {
+    render(<MemoryRouter><CarStationList /></MemoryRouter>)
     fireEvent.click(screen.getByText('Rock FM'))
-    expect(onSelect).toHaveBeenCalledWith(stations[0])
+    expect(useStore.getState().currentStation).toEqual(stations[0])
   })
 
   it('highlights the active station', () => {
-    render(<CarStationList {...defaultProps} activeSlug="jazz-club" />)
+    useStore.setState({ currentStation: stations[1] })
+    render(<MemoryRouter><CarStationList /></MemoryRouter>)
     const button = screen.getByText('Jazz Club').closest('button')
     expect(button?.className).toContain('ring-2')
   })
 
   it('shows loading state', () => {
-    render(<CarStationList {...defaultProps} loading={true} />)
+    useStore.setState({ stationsLoading: true })
+    render(<MemoryRouter><CarStationList /></MemoryRouter>)
     expect(screen.getByText('טוען תחנות...')).toBeInTheDocument()
   })
 
   it('shows empty state when no stations match', () => {
-    render(<CarStationList {...defaultProps} stations={[]} />)
+    useStore.setState({ stations: [] })
+    render(<MemoryRouter><CarStationList /></MemoryRouter>)
     expect(screen.getByText('לא נמצאו תחנות')).toBeInTheDocument()
   })
 
   it('renders station names with larger text size', () => {
-    render(<CarStationList {...defaultProps} />)
+    render(<MemoryRouter><CarStationList /></MemoryRouter>)
     expect(screen.getByText('Rock FM').className).toContain('text-lg')
   })
 })

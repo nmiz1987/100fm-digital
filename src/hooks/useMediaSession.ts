@@ -1,14 +1,14 @@
 import { useEffect } from 'react';
-import { useStore } from '../store/store';
-import { filterStations } from '../utils/filterStations';
+import { useStore, getFilteredStations } from '../store/store';
 
 export function useMediaSession() {
   useEffect(() => {
     if (!('mediaSession' in navigator)) return;
 
     const navigate = (offset: number) => {
-      const { stations, tab, search, favorites, hidden, currentStation, play } = useStore.getState();
-      const list = filterStations(stations, { tab, search, favorites, hidden });
+      const state = useStore.getState();
+      const { currentStation, play } = state;
+      const list = getFilteredStations(state);
       if (!list.length) return;
       const idx = list.findIndex((s) => s.slug === currentStation?.slug);
       const base = idx === -1 ? 0 : idx;
