@@ -14,7 +14,7 @@ npm run test:watch   # watch mode
 npm run test:coverage
 
 # Run a single test file
-npx vitest run src/store/store.test.ts
+npx vitest run src/store/__tests__/store.test.ts
 ```
 
 CI runs `typecheck → lint → test → build` in that order.

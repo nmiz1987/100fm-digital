@@ -57,14 +57,15 @@ src/
   components/
     Header/          # Search bar and dark mode toggle
     PlayerBar/       # Now-playing bar with play/pause, volume, DVR slider tabs
-      SliderTabs/    # DVR timeshift tab navigation
-      VolumeSlider/  # Volume control
+    SliderTabs/      # DVR timeshift tab navigation
+    VolumeSlider/    # Volume control
     StationCard/     # Individual station card
     StationGrid/     # Station grid with filtering and view toggle
-    CarView/         # Car Mode UI (/car routes)
-    common/          # Shared icons, LoadingTimeoutToast, StationsLoader, NotFound
-  hooks/             # usePlayer, useStations, useNowPlaying, useLocalStorage,
-                     # useSliderLabels, useLoadingTimeoutWarning, useAppState
+    CarView/         # Car Mode UI (header, station list, station info, DVR sliders)
+    common/          # Shared icons, LoadingTimeoutToast, StationsLoader
+  Screens/           # Route screens: Main, CarApp, NotFound
+  store/             # Zustand store — state, audio engine, persistence
+  hooks/             # useElementHeight, useMediaSession
   utils/             # proxyUrl, filterStations
   types/             # TypeScript type definitions
   test/              # Test setup and globals
