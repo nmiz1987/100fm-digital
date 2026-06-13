@@ -1,15 +1,10 @@
-import { useNavigate } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
 import { useStore, getFilteredStations } from '../../../store/store';
-import type { Station } from '../../../types';
-import { useCarStationImage } from '../useCarStationImage';
+import { CarStationListItem } from './CarStationListItem/CarStationListItem';
 
 export function CarStationList() {
-  const navigate = useNavigate();
   const isDarkMode = useStore((state) => state.isDarkMode);
   const stationsLoading = useStore((state) => state.stationsLoading);
-  const currentStation = useStore((state) => state.currentStation);
-  const handlePlay = useStore((state) => state.handlePlay);
   const stations = useStore(useShallow(getFilteredStations));
 
   if (stationsLoading) {
@@ -24,46 +19,9 @@ export function CarStationList() {
     <div className="flex-1 overflow-y-auto p-3">
       <ul className="flex flex-col gap-2">
         {stations.map((station) => (
-          <CarStationListItem
-            key={station.slug}
-            station={station}
-            darkMode={isDarkMode}
-            isActive={currentStation?.slug === station.slug}
-            onSelect={() => {
-              handlePlay(station);
-              navigate(`/car/${station.slug}`);
-            }}
-          />
+          <CarStationListItem key={station.slug} station={station} />
         ))}
       </ul>
     </div>
-  );
-}
-
-function CarStationListItem({
-  station,
-  darkMode,
-  isActive,
-  onSelect,
-}: {
-  station: Station;
-  darkMode: boolean;
-  isActive: boolean;
-  onSelect: () => void;
-}) {
-  const { imgSrc, onError } = useCarStationImage(station);
-
-  return (
-    <li>
-      <button
-        onClick={onSelect}
-        className={`w-full flex items-center gap-4 p-3 rounded-xl text-right transition-colors
-          ${isActive ? 'ring-2 ring-[#e8192c]' : ''}
-          ${darkMode ? 'bg-[#1a1a1a] hover:bg-[#242424]' : 'bg-white hover:bg-gray-50 border border-gray-200'}`}
-      >
-        <img src={imgSrc} alt={station.name} onError={onError} className="w-14 h-14 rounded-lg object-cover shrink-0" />
-        <span className={`text-lg font-semibold truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>{station.name}</span>
-      </button>
-    </li>
   );
 }

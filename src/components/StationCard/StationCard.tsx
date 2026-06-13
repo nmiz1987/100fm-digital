@@ -17,18 +17,14 @@ interface StationCardProps {
 export function StationCard({ station, viewMode = 'grid' }: StationCardProps) {
   const { imgSrc, setImgSrc } = useStationCard(station);
   const isDarkMode = useStore((state) => state.isDarkMode);
-  const currentStation = useStore((state) => state.currentStation);
-  const isPlayingGlobal = useStore((state) => state.isPlaying);
-  const favorites = useStore((state) => state.favorites);
-  const hidden = useStore((state) => state.hidden);
+  const isActive = useStore((state) => state.currentStation?.slug === station.slug);
+  const isPlaying = useStore((state) => state.currentStation?.slug === station.slug && state.isPlaying);
+  const isFavorite = useStore((state) => state.favorites.includes(station.slug));
+  const isHidden = useStore((state) => state.hidden.includes(station.slug));
   const handlePlay = useStore((state) => state.handlePlay);
   const toggleFavorite = useStore((state) => state.toggleFavorite);
   const toggleHidden = useStore((state) => state.toggleHidden);
 
-  const isActive = currentStation?.slug === station.slug;
-  const isPlaying = isActive && isPlayingGlobal;
-  const isFavorite = favorites.includes(station.slug);
-  const isHidden = hidden.includes(station.slug);
   const onPlay = () => handlePlay(station);
   const onToggleFavorite = () => toggleFavorite(station.slug);
   const onToggleHide = () => toggleHidden(station.slug);
