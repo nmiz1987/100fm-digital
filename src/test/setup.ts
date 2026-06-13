@@ -4,3 +4,10 @@ import '@testing-library/jest-dom'
 // real audio engine (e.g. via handlePlay), so stub these to avoid console noise.
 window.HTMLMediaElement.prototype.play = () => Promise.resolve()
 window.HTMLMediaElement.prototype.pause = () => {}
+
+// jsdom doesn't implement ResizeObserver, used by useElementHeight.
+window.ResizeObserver ??= class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}

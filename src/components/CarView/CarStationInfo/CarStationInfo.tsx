@@ -1,8 +1,8 @@
 import type { Station } from '../../../types';
 import { PlayIcon, PauseIcon, SkipBackIcon, SkipForwardIcon } from '../../common/icons';
-import { useCarStationImage } from '../useCarStationImage';
+import { useCarStationImage } from '../hooks/useCarStationImage';
 import { CarSliderList } from '../CarSliderList/CarSliderList';
-import { useCarStationInfo } from './useCarStationInfo';
+import { useCarStationInfo } from './useCarStationInfo.hooks';
 import { useStore } from '../../../store/store';
 
 interface CarStationInfoProps {

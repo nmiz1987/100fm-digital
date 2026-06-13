@@ -1,8 +1,8 @@
 import { Routes, Route } from 'react-router-dom';
 import { useMediaSession } from './hooks/useMediaSession';
-import { NotFound } from './components/common/NotFound';
-import { CarApp } from './components/CarView/CarApp';
-import { Main } from './components/Main/Main';
+import { NotFound } from './Screens/NotFound';
+import { CarApp } from './Screens/CarApp';
+import { Main } from './Screens/Main';
 
 export default function App() {
   useMediaSession();

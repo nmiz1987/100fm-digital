@@ -1,6 +1,6 @@
 import { useShallow } from 'zustand/react/shallow';
 import { useStore, getFilteredStations } from '../../../store/store';
-import { CarStationListItem } from './CarStationListItem/CarStationListItem';
+import { CarStationListItem } from '../CarStationListItem/CarStationListItem';
 
 export function CarStationList() {
   const isDarkMode = useStore((state) => state.isDarkMode);

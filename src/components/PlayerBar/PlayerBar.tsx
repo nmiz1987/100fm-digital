@@ -1,7 +1,7 @@
 import { forwardRef } from 'react';
 import { PauseIcon, PlayIcon } from '../common/icons';
-import { VolumeSlider } from './VolumeSlider/VolumeSlider';
-import { SliderTabs } from './SliderTabs/SliderTabs';
+import { VolumeSlider } from '../VolumeSlider/VolumeSlider';
+import { SliderTabs } from '../SliderTabs/SliderTabs';
 import { usePlayerBar } from './usePlayerBar';
 import { useStore } from '../../store/store';
 
