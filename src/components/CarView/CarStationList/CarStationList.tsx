@@ -1,29 +1,23 @@
+import { useStore } from '../../../store/store';
 import type { Station } from '../../../types';
 import { useCarStationImage } from '../useCarStationImage';
 
 interface CarStationListProps {
   stations: Station[];
   loading: boolean;
-  darkMode: boolean;
   activeSlug: string | null;
   onSelect: (station: Station) => void;
 }
 
-export function CarStationList({ stations, loading, darkMode, activeSlug, onSelect }: CarStationListProps) {
+export function CarStationList({ stations, loading, activeSlug, onSelect }: CarStationListProps) {
+  const isDarkMode = useStore((state) => state.isDarkMode);
+
   if (loading) {
-    return (
-      <div className={`flex-1 flex items-center justify-center text-lg ${darkMode ? 'text-white/40' : 'text-gray-400'}`}>
-        טוען תחנות...
-      </div>
-    );
+    return <div className={`flex-1 flex items-center justify-center text-lg ${isDarkMode ? 'text-white/40' : 'text-gray-400'}`}>טוען תחנות...</div>;
   }
 
   if (stations.length === 0) {
-    return (
-      <div className={`flex-1 flex items-center justify-center text-lg ${darkMode ? 'text-white/30' : 'text-gray-400'}`}>
-        לא נמצאו תחנות
-      </div>
-    );
+    return <div className={`flex-1 flex items-center justify-center text-lg ${isDarkMode ? 'text-white/30' : 'text-gray-400'}`}>לא נמצאו תחנות</div>;
   }
 
   return (
@@ -33,7 +27,7 @@ export function CarStationList({ stations, loading, darkMode, activeSlug, onSele
           <CarStationListItem
             key={station.slug}
             station={station}
-            darkMode={darkMode}
+            isDarkMode={isDarkMode}
             isActive={activeSlug === station.slug}
             onSelect={() => onSelect(station)}
           />

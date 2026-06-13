@@ -1,15 +1,16 @@
+import { useStore } from '../../../store/store';
 import { VolumeOffIcon, VolumeLowIcon, VolumeHighIcon } from '../../common/icons';
 
 interface VolumeSliderProps {
   volume: number;
-  darkMode: boolean;
   onChange: (v: number) => void;
 }
 
-export function VolumeSlider({ volume, darkMode, onChange }: VolumeSliderProps) {
+export function VolumeSlider({ volume, onChange }: VolumeSliderProps) {
+  const isDarkMode = useStore((state) => state.isDarkMode);
   return (
     <div className="hidden sm:flex items-center gap-2 shrink-0 w-32">
-      <span className={`select-none ${darkMode ? 'text-white/40' : 'text-gray-400'}`}>
+      <span className={`select-none ${isDarkMode ? 'text-white/40' : 'text-gray-400'}`}>
         {volume === 0 ? <VolumeOffIcon /> : volume < 0.5 ? <VolumeLowIcon /> : <VolumeHighIcon />}
       </span>
       <input

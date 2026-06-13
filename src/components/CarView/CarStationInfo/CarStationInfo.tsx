@@ -4,11 +4,11 @@ import { PlayIcon, PauseIcon, SkipBackIcon, SkipForwardIcon } from '../../common
 import { useCarStationImage } from '../useCarStationImage';
 import { CarSliderList } from '../CarSliderList/CarSliderList';
 import { useCarStationInfo } from './useCarStationInfo';
+import { useStore } from '../../../store/store';
 
 interface CarStationInfoProps {
   station: Station;
   filteredList: Station[];
-  darkMode: boolean;
   player: ReturnType<typeof usePlayer>;
   nowPlaying: NowPlaying | null;
   sliderLabels: string[];
@@ -24,7 +24,6 @@ interface CarStationInfoProps {
 export function CarStationInfo({
   station,
   filteredList,
-  darkMode,
   player,
   nowPlaying,
   sliderLabels,
@@ -38,6 +37,7 @@ export function CarStationInfo({
 }: CarStationInfoProps) {
   const { goNext, goPrev, hasMultiple } = useCarStationInfo({ station, filteredList, handlePlay, onNavigate });
   const { imgSrc, onError } = useCarStationImage(station);
+  const isDarkMode = useStore((state) => state.isDarkMode);
 
   const isActive = player.currentStation?.slug === station.slug;
   const isPlaying = isActive && player.isPlaying;
@@ -58,7 +58,7 @@ export function CarStationInfo({
       <div className="flex flex-col items-center gap-3 pt-2">
         <img src={imgSrc} alt={station.name} onError={onError} className="w-32 h-32 rounded-2xl object-cover shadow-lg" />
         <h1 className="text-2xl font-bold text-center">{station.name}</h1>
-        {trackLine && <p className={`text-base text-center ${darkMode ? 'text-white/60' : 'text-gray-500'}`}>{trackLine}</p>}
+        {trackLine && <p className={`text-base text-center ${isDarkMode ? 'text-white/60' : 'text-gray-500'}`}>{trackLine}</p>}
       </div>
 
       {/* Transport controls */}
@@ -92,7 +92,7 @@ export function CarStationInfo({
       <div className="flex justify-center">
         <button
           onClick={() => handleToggleFavorite(station.slug)}
-          className={`text-3xl leading-none transition-colors ${isFavorite ? 'text-[#e8192c]' : darkMode ? 'text-white/40 hover:text-white/80' : 'text-gray-400 hover:text-gray-700'}`}
+          className={`text-3xl leading-none transition-colors ${isFavorite ? 'text-[#e8192c]' : isDarkMode ? 'text-white/40 hover:text-white/80' : 'text-gray-400 hover:text-gray-700'}`}
           aria-label={isFavorite ? 'הסר ממועדפים' : 'הוסף למועדפים'}
         >
           {isFavorite ? '♥' : '♡'}
@@ -105,7 +105,6 @@ export function CarStationInfo({
           station={station}
           currentSlider={isActive ? player.currentSlider : null}
           sliderLabels={sliderLabels}
-          darkMode={darkMode}
           onSelectLive={() => (isActive ? handleSelectLive() : handlePlay(station))}
           onSelectSlider={(slider) => (isActive ? handleSelectSlider(slider) : handlePlay(station))}
         />

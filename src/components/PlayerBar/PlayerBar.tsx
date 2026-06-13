@@ -4,6 +4,7 @@ import { PauseIcon, PlayIcon } from '../common/icons';
 import { VolumeSlider } from './VolumeSlider/VolumeSlider';
 import { SliderTabs } from './SliderTabs/SliderTabs';
 import { usePlayerBar } from './usePlayerBar';
+import { useStore } from '../../store/store';
 
 interface PlayerBarProps {
   station: Station;
@@ -14,7 +15,7 @@ interface PlayerBarProps {
   isLoading: boolean;
   volume: number;
   isFavorite: boolean;
-  darkMode: boolean;
+
   onPlayPause: () => void;
   onStop: () => void;
   onVolumeChange: (v: number) => void;
@@ -33,7 +34,6 @@ export const PlayerBar = forwardRef<HTMLDivElement, PlayerBarProps>(function Pla
     isLoading,
     volume,
     isFavorite,
-    darkMode,
     onPlayPause,
     onStop,
     onVolumeChange,
@@ -44,11 +44,12 @@ export const PlayerBar = forwardRef<HTMLDivElement, PlayerBarProps>(function Pla
   ref,
 ) {
   const { hasSliders, trackLine, currentSliderIndex } = usePlayerBar({ station, currentSlider, nowPlaying });
+  const isDarkMode = useStore((state) => state.isDarkMode);
 
   return (
     <div
       ref={ref}
-      className={`fixed bottom-0 left-0 right-0 z-50 backdrop-blur border-t flex flex-col ${hasSliders ? 'pb-1' : ''} ${darkMode ? 'bg-[#111111]/98 border-white/8' : 'bg-white/98 border-gray-200 shadow-[0_-1px_8px_rgba(0,0,0,0.08)]'}`}
+      className={`fixed bottom-0 left-0 right-0 z-50 backdrop-blur border-t flex flex-col ${hasSliders ? 'pb-1' : ''} ${isDarkMode ? 'bg-[#111111]/98 border-white/8' : 'bg-white/98 border-gray-200 shadow-[0_-1px_8px_rgba(0,0,0,0.08)]'}`}
     >
       {/* Main row */}
       <div className="flex items-center gap-3 px-4 py-2 h-17.5 md:h-18">
@@ -63,13 +64,13 @@ export const PlayerBar = forwardRef<HTMLDivElement, PlayerBarProps>(function Pla
             }}
           />
           <div className="min-w-0">
-            <p className={`text-sm font-semibold truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>{station.name}</p>
+            <p className={`text-sm font-semibold truncate ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{station.name}</p>
             {isLoading ? (
-              <p className={`text-sm animate-pulse ${darkMode ? 'text-white/40' : 'text-gray-400'}`}>טוען...</p>
+              <p className={`text-sm animate-pulse ${isDarkMode ? 'text-white/40' : 'text-gray-400'}`}>טוען...</p>
             ) : trackLine ? (
-              <p className={`text-sm truncate ${darkMode ? 'text-white/50' : 'text-gray-500'}`}>{trackLine}</p>
+              <p className={`text-sm truncate ${isDarkMode ? 'text-white/50' : 'text-gray-500'}`}>{trackLine}</p>
             ) : (
-              <p className={`text-sm ${darkMode ? 'text-white/30' : 'text-gray-400'}`}>
+              <p className={`text-sm ${isDarkMode ? 'text-white/30' : 'text-gray-400'}`}>
                 {currentSlider
                   ? (sliderLabels[currentSliderIndex + 1] ?? 'שידור מושהה')
                   : hasSliders
@@ -85,7 +86,7 @@ export const PlayerBar = forwardRef<HTMLDivElement, PlayerBarProps>(function Pla
           <button
             onClick={onToggleFavorite}
             className={`p-2 rounded-full transition-colors text-lg leading-none
-              ${isFavorite ? 'text-[#e8192c]' : darkMode ? 'text-white/40 hover:text-white/80' : 'text-gray-400 hover:text-gray-700'}`}
+              ${isFavorite ? 'text-[#e8192c]' : isDarkMode ? 'text-white/40 hover:text-white/80' : 'text-gray-400 hover:text-gray-700'}`}
             title={isFavorite ? 'הסר ממועדפים' : 'הוסף למועדפים'}
           >
             {isFavorite ? '♥' : '♡'}
@@ -109,14 +110,14 @@ export const PlayerBar = forwardRef<HTMLDivElement, PlayerBarProps>(function Pla
 
           <button
             onClick={onStop}
-            className={`p-2 transition-colors text-sm rounded-full ${darkMode ? 'text-white/40 hover:text-white/80' : 'text-gray-400 hover:text-gray-700'}`}
+            className={`p-2 transition-colors text-sm rounded-full ${isDarkMode ? 'text-white/40 hover:text-white/80' : 'text-gray-400 hover:text-gray-700'}`}
             title="עצור"
           >
             ✕
           </button>
         </div>
 
-        <VolumeSlider volume={volume} darkMode={darkMode} onChange={onVolumeChange} />
+        <VolumeSlider volume={volume} onChange={onVolumeChange} />
       </div>
 
       {hasSliders && (
@@ -124,7 +125,6 @@ export const PlayerBar = forwardRef<HTMLDivElement, PlayerBarProps>(function Pla
           station={station}
           currentSlider={currentSlider}
           sliderLabels={sliderLabels}
-          darkMode={darkMode}
           onSelectLive={onSelectLive}
           onSelectSlider={onSelectSlider}
         />

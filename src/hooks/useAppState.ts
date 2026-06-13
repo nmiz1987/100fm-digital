@@ -7,9 +7,12 @@ import { useLocalStorage } from './useLocalStorage';
 import { useLoadingTimeoutWarning } from './useLoadingTimeoutWarning';
 import { filterStations, type Tab } from '../utils/filterStations';
 import type { Slider, Station } from '../types';
+import { useStore } from '../store/store';
 
 export function useAppState() {
-  const [darkMode, setDarkMode] = useLocalStorage('100fm_dark_mode', true);
+  const isDarkMode = useStore((state) => state.isDarkMode);
+  const handleDarkModeToggle = useStore((state) => state.handleDarkModeToggle);
+
   const [favorites, setFavorites] = useLocalStorage<string[]>('100fm_favorites', []);
   const [hidden, setHidden] = useLocalStorage<string[]>('100fm_hidden', []);
   const [volume, setVolumeStorage] = useLocalStorage('100fm_volume', 0.8);
@@ -60,10 +63,6 @@ export function useAppState() {
     if (player.currentStation?.slug === slug) player.stop();
   };
 
-  const handleDarkModeToggle = () => {
-    setDarkMode((prev) => !prev);
-  };
-
   // Keep a ref so Media Session handlers always see fresh state without re-registering
   const navigateRef = useRef<{ next: () => void; prev: () => void }>({ next: () => {}, prev: () => {} });
 
@@ -101,14 +100,13 @@ export function useAppState() {
   }, [player.currentStation, nowPlaying]);
 
   // Applied during render (not in an effect) to avoid a flash of wrong theme on load
-  if (darkMode) {
+  if (isDarkMode) {
     document.documentElement.classList.add('dark');
   } else {
     document.documentElement.classList.remove('dark');
   }
 
   return {
-    darkMode,
     search,
     setSearch,
     tab,

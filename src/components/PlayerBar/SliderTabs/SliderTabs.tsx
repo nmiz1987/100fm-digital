@@ -5,13 +5,12 @@ interface SliderTabsProps {
   station: Station;
   currentSlider: Slider | null;
   sliderLabels: string[];
-  darkMode: boolean;
   onSelectLive: () => void;
   onSelectSlider: (slider: Slider) => void;
 }
 
-export function SliderTabs({ station, currentSlider, sliderLabels, darkMode, onSelectLive, onSelectSlider }: SliderTabsProps) {
-  const { inactiveTab } = useSliderTabs(darkMode);
+export function SliderTabs({ station, currentSlider, sliderLabels, onSelectLive, onSelectSlider }: SliderTabsProps) {
+  const { inactiveTab } = useSliderTabs();
 
   return (
     <div className="flex flex-wrap items-center gap-1.5 px-4 pb-2">

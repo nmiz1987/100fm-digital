@@ -10,14 +10,13 @@ import { Tab } from '../StationGrid/useStationGrid';
 import { useNowPlaying } from '../../hooks/useNowPlaying';
 import { usePlayer } from '../../hooks/usePlayer';
 import { useSliderLabels } from '../../hooks/useSliderLabels';
+import { useStore } from '../../store/store';
 
 interface MainProps {
-  darkMode: boolean;
   search: string;
   setSearch: (value: string) => void;
   setTab: (value: Tab) => void;
   tab: Tab;
-  handleDarkModeToggle: () => void;
   loadingTimeoutWarning: {
     visible: boolean;
     dismiss: () => void;
@@ -39,12 +38,10 @@ interface MainProps {
 }
 
 export const Main = ({
-  darkMode,
   search,
   setSearch,
   setTab,
   tab,
-  handleDarkModeToggle,
   loadingTimeoutWarning,
   player,
   loading,
@@ -63,22 +60,17 @@ export const Main = ({
 }: MainProps) => {
   const navigate = useNavigate();
   const [playerBarRef, playerBarHeight] = useElementHeight<HTMLDivElement>();
+  const isDarkMode = useStore((state) => state.isDarkMode);
 
   return (
-    <div className={`min-h-screen flex flex-col ${darkMode ? 'bg-[#0f0f0f] text-white' : 'bg-gray-50 text-gray-900'}`}>
-      <Header
-        search={search}
-        onSearchChange={setSearch}
-        darkMode={darkMode}
-        onDarkModeToggle={handleDarkModeToggle}
-        onCarModeEnter={() => navigate('/car')}
-      />
+    <div className={`min-h-screen flex flex-col ${isDarkMode ? 'bg-[#0f0f0f] text-white' : 'bg-gray-50 text-gray-900'}`}>
+      <Header search={search} onSearchChange={setSearch} onCarModeEnter={() => navigate('/car')} />
 
-      <LoadingTimeoutToast visible={loadingTimeoutWarning.visible} darkMode={darkMode} onDismiss={loadingTimeoutWarning.dismiss} />
+      <LoadingTimeoutToast visible={loadingTimeoutWarning.visible} onDismiss={loadingTimeoutWarning.dismiss} />
 
       <main className="flex-1 flex flex-col" style={player.currentStation ? { paddingBottom: playerBarHeight } : undefined}>
         {loading ? (
-          <StationsLoader darkMode={darkMode} />
+          <StationsLoader />
         ) : (
           <StationGrid
             stations={stations}
@@ -88,7 +80,6 @@ export const Main = ({
             isPlaying={player.isPlaying}
             favorites={favorites}
             hidden={hidden}
-            darkMode={darkMode}
             tab={tab}
             setTab={setTab}
             onPlay={handlePlay}
@@ -108,7 +99,6 @@ export const Main = ({
           isLoading={player.isLoading}
           volume={player.volume}
           isFavorite={favorites.includes(player.currentStation.slug)}
-          darkMode={darkMode}
           onPlayPause={handlePlayPause}
           onStop={player.stop}
           onVolumeChange={handleVolumeChange}

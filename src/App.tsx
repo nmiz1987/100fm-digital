@@ -6,7 +6,6 @@ import { Main } from './components/Main/Main';
 
 export default function App() {
   const {
-    darkMode,
     search,
     setSearch,
     tab,
@@ -26,12 +25,10 @@ export default function App() {
     handleSelectLive,
     handleToggleFavorite,
     handleToggleHide,
-    handleDarkModeToggle,
   } = useAppState();
 
   const carApp = (
     <CarApp
-      darkMode={darkMode}
       stations={stations}
       loading={loading}
       tab={tab}
@@ -57,7 +54,6 @@ export default function App() {
         path="/"
         element={
           <Main
-            darkMode={darkMode}
             search={search}
             setSearch={setSearch}
             tab={tab}
@@ -77,11 +73,10 @@ export default function App() {
             handleSelectLive={handleSelectLive}
             handleToggleFavorite={handleToggleFavorite}
             handleToggleHide={handleToggleHide}
-            handleDarkModeToggle={handleDarkModeToggle}
           />
         }
       />
-      <Route path="*" element={<NotFound darkMode={darkMode} />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }
