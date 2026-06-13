@@ -1,3 +1,4 @@
+import { useStore } from '../../store/store';
 import type { Station } from '../../types';
 import { EyeIcon, EyeOffIcon } from '../common/icons';
 import { useStationCard } from './useStationCard';
@@ -10,30 +11,23 @@ const BAR_STYLES = [1, 2, 3, 4].map((i) => ({
 
 interface StationCardProps {
   station: Station;
-  isPlaying: boolean;
-  isActive: boolean;
-  isFavorite: boolean;
-  isHidden: boolean;
-  darkMode: boolean;
   viewMode?: 'grid' | 'list';
-  onPlay: () => void;
-  onToggleFavorite: () => void;
-  onToggleHide: () => void;
 }
 
-export function StationCard({
-  station,
-  isPlaying,
-  isActive,
-  isFavorite,
-  isHidden,
-  darkMode,
-  viewMode = 'grid',
-  onPlay,
-  onToggleFavorite,
-  onToggleHide,
-}: StationCardProps) {
+export function StationCard({ station, viewMode = 'grid' }: StationCardProps) {
   const { imgSrc, setImgSrc } = useStationCard(station);
+  const isDarkMode = useStore((state) => state.isDarkMode);
+  const isActive = useStore((state) => state.currentStation?.slug === station.slug);
+  const isPlaying = useStore((state) => state.currentStation?.slug === station.slug && state.isPlaying);
+  const isFavorite = useStore((state) => state.favorites.includes(station.slug));
+  const isHidden = useStore((state) => state.hidden.includes(station.slug));
+  const handlePlay = useStore((state) => state.handlePlay);
+  const toggleFavorite = useStore((state) => state.toggleFavorite);
+  const toggleHidden = useStore((state) => state.toggleHidden);
+
+  const onPlay = () => handlePlay(station);
+  const onToggleFavorite = () => toggleFavorite(station.slug);
+  const onToggleHide = () => toggleHidden(station.slug);
 
   if (viewMode === 'list') {
     return (
@@ -41,7 +35,7 @@ export function StationCard({
         className={`
           relative flex items-center gap-3 px-3 py-2.5 cursor-pointer transition-all duration-200
           ${isHidden ? 'opacity-40' : ''}
-          ${darkMode ? 'bg-[#1a1a1a] hover:bg-[#242424]' : 'bg-white hover:bg-gray-50 border-b border-gray-100'}
+          ${isDarkMode ? 'bg-[#1a1a1a] hover:bg-[#242424]' : 'bg-white hover:bg-gray-50 border-b border-gray-100'}
           ${isActive ? 'border-r-4 border-r-[#e8192c]' : ''}
         `}
         onClick={onPlay}
@@ -66,9 +60,9 @@ export function StationCard({
 
         {/* Info */}
         <div className="flex-1 min-w-0">
-          <p className={`font-semibold text-sm truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>{station.name}</p>
+          <p className={`font-semibold text-sm truncate ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{station.name}</p>
           {station.description && (
-            <p className={`text-xs truncate ${darkMode ? 'text-white/40' : 'text-gray-400'}`}>{station.description.split('\n')[0]}</p>
+            <p className={`text-xs truncate ${isDarkMode ? 'text-white/40' : 'text-gray-400'}`}>{station.description.split('\n')[0]}</p>
           )}
         </div>
 
@@ -77,7 +71,7 @@ export function StationCard({
           {!isHidden && (
             <button
               onClick={onToggleFavorite}
-              className={`text-xl leading-none transition-colors ${isFavorite ? 'text-[#e8192c]' : darkMode ? 'text-white/40 hover:text-white/80' : 'text-gray-400 hover:text-gray-700'}`}
+              className={`text-xl leading-none transition-colors ${isFavorite ? 'text-[#e8192c]' : isDarkMode ? 'text-white/40 hover:text-white/80' : 'text-gray-400 hover:text-gray-700'}`}
               title={isFavorite ? 'הסר ממועדפים' : 'הוסף למועדפים'}
             >
               {isFavorite ? '♥' : '♡'}
@@ -85,7 +79,7 @@ export function StationCard({
           )}
           <button
             onClick={onToggleHide}
-            className={`transition-colors ${isHidden ? 'text-[#e8192c]' : darkMode ? 'text-white/40 hover:text-white/80' : 'text-gray-400 hover:text-gray-700'}`}
+            className={`transition-colors ${isHidden ? 'text-[#e8192c]' : isDarkMode ? 'text-white/40 hover:text-white/80' : 'text-gray-400 hover:text-gray-700'}`}
             title={isHidden ? 'הצג תחנה' : 'הסתר תחנה'}
           >
             {isHidden ? <EyeOffIcon /> : <EyeIcon />}
@@ -100,8 +94,8 @@ export function StationCard({
       className={`
         relative group rounded-xl overflow-hidden cursor-pointer transition-all duration-200
         ${isHidden ? 'opacity-40' : ''}
-        ${darkMode ? 'bg-[#1a1a1a] hover:bg-[#242424]' : 'bg-white hover:bg-gray-50 border border-gray-200 shadow-sm'}
-        ${isActive ? 'ring-2 ring-[#e8192c] shadow-lg shadow-[#e8192c]/20' : darkMode ? 'hover:ring-1 hover:ring-white/10' : 'hover:ring-1 hover:ring-gray-300'}
+        ${isDarkMode ? 'bg-[#1a1a1a] hover:bg-[#242424]' : 'bg-white hover:bg-gray-50 border border-gray-200 shadow-sm'}
+        ${isActive ? 'ring-2 ring-[#e8192c] shadow-lg shadow-[#e8192c]/20' : isDarkMode ? 'hover:ring-1 hover:ring-white/10' : 'hover:ring-1 hover:ring-gray-300'}
       `}
       onClick={onPlay}
     >
@@ -148,13 +142,13 @@ export function StationCard({
 
       {/* Action row */}
       <div
-        className={`flex items-center gap-3 px-3 pt-2 ${darkMode ? 'border-t border-white/5' : 'border-t border-gray-100'}`}
+        className={`flex items-center gap-3 px-3 pt-2 ${isDarkMode ? 'border-t border-white/5' : 'border-t border-gray-100'}`}
         onClick={(e) => e.stopPropagation()}
       >
         {!isHidden && (
           <button
             onClick={onToggleFavorite}
-            className={`text-xl leading-none transition-colors ${isFavorite ? 'text-[#e8192c]' : darkMode ? 'text-white/40 hover:text-white/80' : 'text-gray-400 hover:text-gray-700'}`}
+            className={`text-xl leading-none transition-colors ${isFavorite ? 'text-[#e8192c]' : isDarkMode ? 'text-white/40 hover:text-white/80' : 'text-gray-400 hover:text-gray-700'}`}
             title={isFavorite ? 'הסר ממועדפים' : 'הוסף למועדפים'}
           >
             {isFavorite ? '♥' : '♡'}
@@ -162,7 +156,7 @@ export function StationCard({
         )}
         <button
           onClick={onToggleHide}
-          className={`transition-colors ${isHidden ? 'text-[#e8192c]' : darkMode ? 'text-white/40 hover:text-white/80' : 'text-gray-400 hover:text-gray-700'}`}
+          className={`transition-colors ${isHidden ? 'text-[#e8192c]' : isDarkMode ? 'text-white/40 hover:text-white/80' : 'text-gray-400 hover:text-gray-700'}`}
           title={isHidden ? 'הצג תחנה' : 'הסתר תחנה'}
         >
           {isHidden ? <EyeOffIcon /> : <EyeIcon />}
@@ -171,9 +165,9 @@ export function StationCard({
 
       {/* Info */}
       <div className="px-3 pt-1.5 pb-3">
-        <p className={`font-semibold text-sm truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>{station.name}</p>
+        <p className={`font-semibold text-sm truncate ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{station.name}</p>
         {station.description && (
-          <p className={`text-xs mt-0.5 line-clamp-2 leading-relaxed ${darkMode ? 'text-white/40' : 'text-gray-400'}`}>
+          <p className={`text-xs mt-0.5 line-clamp-2 leading-relaxed ${isDarkMode ? 'text-white/40' : 'text-gray-400'}`}>
             {station.description.split('\n')[0]}
           </p>
         )}

@@ -1,47 +1,30 @@
-import type { Station, NowPlaying, Slider } from '../../../types';
-import type { usePlayer } from '../../../hooks/usePlayer';
+import type { Station } from '../../../types';
 import { PlayIcon, PauseIcon, SkipBackIcon, SkipForwardIcon } from '../../common/icons';
-import { useCarStationImage } from '../useCarStationImage';
+import { useCarStationImage } from '../hooks/useCarStationImage';
 import { CarSliderList } from '../CarSliderList/CarSliderList';
-import { useCarStationInfo } from './useCarStationInfo';
+import { useCarStationInfo } from './useCarStationInfo.hooks';
+import { useStore } from '../../../store/store';
 
 interface CarStationInfoProps {
   station: Station;
-  filteredList: Station[];
-  darkMode: boolean;
-  player: ReturnType<typeof usePlayer>;
-  nowPlaying: NowPlaying | null;
-  sliderLabels: string[];
-  favorites: string[];
-  handlePlay: (station: Station) => void;
-  handlePlayPause: () => void;
-  handleSelectSlider: (slider: Slider) => void;
-  handleSelectLive: () => void;
-  handleToggleFavorite: (slug: string) => void;
-  onNavigate: (station: Station) => void;
 }
 
-export function CarStationInfo({
-  station,
-  filteredList,
-  darkMode,
-  player,
-  nowPlaying,
-  sliderLabels,
-  favorites,
-  handlePlay,
-  handlePlayPause,
-  handleSelectSlider,
-  handleSelectLive,
-  handleToggleFavorite,
-  onNavigate,
-}: CarStationInfoProps) {
-  const { goNext, goPrev, hasMultiple } = useCarStationInfo({ station, filteredList, handlePlay, onNavigate });
+export function CarStationInfo({ station }: CarStationInfoProps) {
+  const { goNext, goPrev, hasMultiple } = useCarStationInfo(station);
   const { imgSrc, onError } = useCarStationImage(station);
+  const isDarkMode = useStore((state) => state.isDarkMode);
+  const currentStation = useStore((state) => state.currentStation);
+  const isPlayingGlobal = useStore((state) => state.isPlaying);
+  const isLoadingGlobal = useStore((state) => state.isLoading);
+  const nowPlaying = useStore((state) => state.nowPlaying);
+  const favorites = useStore((state) => state.favorites);
+  const handlePlay = useStore((state) => state.handlePlay);
+  const handlePlayPause = useStore((state) => state.handlePlayPause);
+  const toggleFavorite = useStore((state) => state.toggleFavorite);
 
-  const isActive = player.currentStation?.slug === station.slug;
-  const isPlaying = isActive && player.isPlaying;
-  const isLoading = isActive && player.isLoading;
+  const isActive = currentStation?.slug === station.slug;
+  const isPlaying = isActive && isPlayingGlobal;
+  const isLoading = isActive && isLoadingGlobal;
   const isFavorite = favorites.includes(station.slug);
   const hasSliders = !!station.sliders?.length;
 
@@ -58,7 +41,7 @@ export function CarStationInfo({
       <div className="flex flex-col items-center gap-3 pt-2">
         <img src={imgSrc} alt={station.name} onError={onError} className="w-32 h-32 rounded-2xl object-cover shadow-lg" />
         <h1 className="text-2xl font-bold text-center">{station.name}</h1>
-        {trackLine && <p className={`text-base text-center ${darkMode ? 'text-white/60' : 'text-gray-500'}`}>{trackLine}</p>}
+        {trackLine && <p className={`text-base text-center ${isDarkMode ? 'text-white/60' : 'text-gray-500'}`}>{trackLine}</p>}
       </div>
 
       {/* Transport controls */}
@@ -91,8 +74,8 @@ export function CarStationInfo({
       {/* Favorite toggle */}
       <div className="flex justify-center">
         <button
-          onClick={() => handleToggleFavorite(station.slug)}
-          className={`text-3xl leading-none transition-colors ${isFavorite ? 'text-[#e8192c]' : darkMode ? 'text-white/40 hover:text-white/80' : 'text-gray-400 hover:text-gray-700'}`}
+          onClick={() => toggleFavorite(station.slug)}
+          className={`text-3xl leading-none transition-colors ${isFavorite ? 'text-[#e8192c]' : isDarkMode ? 'text-white/40 hover:text-white/80' : 'text-gray-400 hover:text-gray-700'}`}
           aria-label={isFavorite ? 'הסר ממועדפים' : 'הוסף למועדפים'}
         >
           {isFavorite ? '♥' : '♡'}
@@ -100,16 +83,7 @@ export function CarStationInfo({
       </div>
 
       {/* Sliders list */}
-      {hasSliders && (
-        <CarSliderList
-          station={station}
-          currentSlider={isActive ? player.currentSlider : null}
-          sliderLabels={sliderLabels}
-          darkMode={darkMode}
-          onSelectLive={() => (isActive ? handleSelectLive() : handlePlay(station))}
-          onSelectSlider={(slider) => (isActive ? handleSelectSlider(slider) : handlePlay(station))}
-        />
-      )}
+      {hasSliders && <CarSliderList station={station} />}
     </div>
   );
 }
